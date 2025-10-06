@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login Validation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Test Login Form Validation</h1>
+    <div id="result"></div>
+    <button id="testValidation">Test Empty Field Validation</button>
+    
+    <script>
+    $(document).ready(function() {
+        $('#testValidation').click(function() {
+            $('#result').html('<p>Testing login form validation with empty fields...</p>');
+            
+            // Get CSRF token from login page
+            $.get('/user/security/login', function(html) {
+                var csrfToken = $(html).find('meta[name="csrf-token"]').attr('content');
+                if (!csrfToken) {
+                    var csrfMatch = html.match(/name="_csrf"[^>]*value="([^"]*)"/i);
+                    csrfToken = csrfMatch ? csrfMatch[1] : null;
+                }
+                
+                $('#result').append('<p>✓ Login page loaded</p>');
+                $('#result').append('<p>CSRF Token: ' + (csrfToken ? 'Found' : 'Not found') + '</p>');
+                
+                if (!csrfToken) {
+                    $('#result').append('<p>✗ Cannot proceed without CSRF token</p>');
+                    return;
+                }
+                
+                // Test 1: Submit completely empty form
+                $('#result').append('<p><strong>Test 1: Completely empty form</strong></p>');
+                $.ajax({
+                    url: '/user/security/login',
+                    type: 'POST',
+                    data: {
+                        '_csrf': csrfToken,
+                        'ajax': 'login-form',
+                        'login-form[login]': '',
+                        'login-form[password]': '',
+                        'login-form[rememberMe]': '0'
+                    },
+                    success: function(response) {
+                        $('#result').append('<p>AJAX Response: ' + JSON.stringify(response) + '</p>');
+                        if (response && Object.keys(response).length > 0) {
+                            $('#result').append('<p>✓ Validation errors found for empty fields</p>');
+                            Object.keys(response).forEach(function(field) {
+                                $('#result').append('<p>  - ' + field + ': ' + response[field].join(', ') + '</p>');
+                            });
+                        } else {
+                            $('#result').append('<p>✗ No validation errors returned for empty fields</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#result').append('<p>✗ AJAX Error: ' + error + '</p>');
+                    }
+                });
+                
+                // Test 2: Submit with only login field empty
+                setTimeout(function() {
+                    $('#result').append('<p><strong>Test 2: Only login field empty</strong></p>');
+                    $.ajax({
+                        url: '/user/security/login',
+                        type: 'POST',
+                        data: {
+                            '_csrf': csrfToken,
+                            'ajax': 'login-form',
+                            'login-form[login]': '',
+                            'login-form[password]': 'somepassword',
+                            'login-form[rememberMe]': '0'
+                        },
+                        success: function(response) {
+                            $('#result').append('<p>AJAX Response: ' + JSON.stringify(response) + '</p>');
+                            if (response && response['login-form-login']) {
+                                $('#result').append('<p>✓ Login field validation error found</p>');
+                            } else {
+                                $('#result').append('<p>✗ No login field validation error</p>');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            $('#result').append('<p>✗ AJAX Error: ' + error + '</p>');
+                        }
+                    });
+                }, 1000);
+                
+                // Test 3: Submit with only password field empty
+                setTimeout(function() {
+                    $('#result').append('<p><strong>Test 3: Only password field empty</strong></p>');
+                    $.ajax({
+                        url: '/user/security/login',
+                        type: 'POST',
+                        data: {
+                            '_csrf': csrfToken,
+                            'ajax': 'login-form',
+                            'login-form[login]': 'testuser',
+                            'login-form[password]': '',
+                            'login-form[rememberMe]': '0'
+                        },
+                        success: function(response) {
+                            $('#result').append('<p>AJAX Response: ' + JSON.stringify(response) + '</p>');
+                            if (response && response['login-form-password']) {
+                                $('#result').append('<p>✓ Password field validation error found</p>');
+                            } else {
+                                $('#result').append('<p>✗ No password field validation error</p>');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            $('#result').append('<p>✗ AJAX Error: ' + error + '</p>');
+                        }
+                    });
+                }, 2000);
+                
+            }).fail(function() {
+                $('#result').append('<p>✗ Failed to load login page</p>');
+            });
+        });
+    });
+    </script>
+</body>
+</html>

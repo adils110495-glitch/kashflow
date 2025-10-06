@@ -1,0 +1,532 @@
+/* Custom CSS for Kashflow Application */
+/* Always use Bootstrap classes first, then add custom styles as needed */
+
+
+
+
+
+
+
+/* Country flag styles */
+.country-flag {
+    display: inline-block;
+    width: 20px;
+    height: 14px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 2px;
+    margin-right: 8px;
+    vertical-align: middle;
+    font-size: 10px;
+    line-height: 14px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+/* Registration form enhancements */
+.registration-form {
+    /* Use Bootstrap classes: .card, .card-body, .form-group, etc. */
+}
+
+/* Registration Page - Remove Scrollbars */
+.auth-wrapper {
+    overflow: hidden;
+}
+
+.auth-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.auth-wrapper {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Remove scrollbars from body on registration page */
+html.auth body {
+    overflow: hidden;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Remove scrollbars from html element */
+html.auth {
+    overflow: hidden;
+}
+
+html::-webkit-scrollbar {
+    display: none;
+}
+
+html {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Form alignment fixes for registration page */
+.auth-content .form-control {
+    height: 50px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.auth-content .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Input group alignment */
+.auth-content .input-group {
+    height: 50px;
+    width: 100%;
+}
+
+.auth-content .input-group-text {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    font-weight: 600;
+    color: #495057;
+    padding: 0.75rem 1rem;
+    min-width: 60px;
+    text-align: center;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.auth-content .input-group .form-control {
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    height: 50px;
+    flex: 1;
+    width: 100%;
+}
+
+.auth-content .input-group .form-control:focus {
+    border-left: none;
+}
+
+/* Select2 alignment */
+.auth-content .select2-container {
+    height: 50px !important;
+}
+
+.auth-content .select2-container .select2-selection--single {
+    height: 50px !important;
+    border: 2px solid #e9ecef !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.auth-content .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 34px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.auth-content .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 46px !important;
+    top: 2px !important;
+}
+
+.auth-content .select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Signup image alignment */
+.signup-image-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 0;
+    padding: 0;
+    overflow: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+
+.signup-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-height: 100vh;
+}
+
+/* Ensure both columns have equal height */
+.auth-content .row {
+    min-height: 100vh;
+}
+
+.auth-content .col-md-6 {
+    min-height: 100vh;
+}
+
+.auth-content .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Upgrade Modal Styles */
+.upgrade-modal .modal-dialog {
+    max-width: 900px;
+}
+
+/* Override Bootstrap card styles for package cards in modal */
+#upgradeModalData .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+    padding: 10px;
+}
+
+#upgradeModalData .package-card {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+#upgradeModalData .package-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+    background: linear-gradient(145deg, #ffffff, #f0f8ff);
+}
+
+#upgradeModalData .package-card.selected {
+    border-color: #28a745;
+    background: linear-gradient(145deg, #f8fff9, #e8f5e8);
+    box-shadow: 0 12px 24px rgba(40, 167, 69, 0.2), 0 4px 8px rgba(40, 167, 69, 0.1);
+    transform: translateY(-4px) scale(1.01);
+}
+
+#upgradeModalData .package-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    animation: checkmarkPulse 0.6s ease-out;
+}
+
+@keyframes checkmarkPulse {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#upgradeModalData .package-card .card-header {
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+#upgradeModalData .package-price h2 {
+    font-size: 32px;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+#upgradeModalData .package-fee h4 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+#upgradeModalData .upgrade-btn {
+    transition: all 0.3s ease;
+    font-weight: bold;
+    padding: 12px;
+}
+
+#upgradeModalData .upgrade-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.upgrade-modal .current-package {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.upgrade-modal .current-package h6 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.upgrade-modal .modal-upgrade-btn {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.upgrade-modal .modal-upgrade-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.upgrade-modal .modal-upgrade-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.upgrade-modal .not-eligible {
+    text-align: center;
+    padding: 2rem;
+}
+
+.upgrade-modal .not-eligible .alert {
+    border-left: 4px solid #ffc107;
+}
+.row.align-items-stretch > .col-md-6 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Select2 customizations */
+.select2-container {
+    /* Bootstrap integration - use .form-control equivalent styling */
+}
+
+/* Mobile code display */
+#mobilecodedisplay {
+    /* Use Bootstrap text utilities: .text-muted, .small, etc. */
+    font-weight: 500;
+}
+
+/* Form validation styles */
+.has-error .form-control {
+    /* Use Bootstrap validation classes: .is-invalid, .is-valid */
+}
+
+/* Custom button styles */
+.btn-custom {
+    /* Extend Bootstrap button classes: .btn, .btn-primary, etc. */
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+    .country-flag {
+        width: 18px;
+        height: 12px;
+        font-size: 9px;
+        line-height: 12px;
+    }
+}
+.card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.stat-item {
+    padding: 1rem;
+}
+
+.stat-item h3 {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.activity-list {
+    margin-top: 15px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-item i {
+    width: 20px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .d-grid {
+        gap: 0.5rem !important;
+    }
+}
+
+/* Level Team Styles */
+.level-section {
+    border-left: 4px solid #007bff;
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+
+.level-section[data-level="1"] { border-left-color: #007bff; }
+.level-section[data-level="2"] { border-left-color: #28a745; }
+.level-section[data-level="3"] { border-left-color: #ffc107; }
+.level-section[data-level="4"] { border-left-color: #dc3545; }
+.level-section[data-level="5"] { border-left-color: #6f42c1; }
+.level-section[data-level="6"] { border-left-color: #fd7e14; }
+.level-section[data-level="7"] { border-left-color: #20c997; }
+.level-section[data-level="8"] { border-left-color: #e83e8c; }
+.level-section[data-level="9"] { border-left-color: #6c757d; }
+.level-section[data-level="10"] { border-left-color: #343a40; }
+
+.level-header {
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.level-title {
+    margin: 0;
+    color: #495057;
+    font-size: 1.1rem;
+}
+
+/* Form Styles */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+/* Table Styles */
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.75em;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+}
+
+.auth-content .card-header {
+    background-color: white;
+}
+.field-register-form-mobile_no{
+    display: contents;
+}
+.btn-secondary{
+    color: white;
+}

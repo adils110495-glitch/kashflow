@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Login Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Final Login Test</h1>
+    <div id="result"></div>
+    
+    <script>
+    $(document).ready(function() {
+        $('#result').append('<p>Testing login functionality...</p>');
+        
+        // Test 1: Check if login page loads
+        $.get('/user/security/login', function(html) {
+            $('#result').append('<p>✓ Login page loads successfully</p>');
+            
+            // Check if our JavaScript is included
+            if (html.indexOf('login-handler.js') !== -1) {
+                $('#result').append('<p>✓ Login handler JavaScript is included</p>');
+            } else {
+                $('#result').append('<p>✗ Login handler JavaScript is NOT included</p>');
+            }
+            
+            // Extract CSRF token
+            var csrfToken = $(html).find('meta[name="csrf-token"]').attr('content');
+            if (!csrfToken) {
+                var csrfInput = $(html).find('input[name="_csrf"]').val();
+                csrfToken = csrfInput;
+            }
+            
+            $('#result').append('<p>CSRF Token: ' + (csrfToken || 'Not found') + '</p>');
+            
+            // Test 2: Test AJAX validation
+            $('#result').append('<h3>Testing AJAX Validation:</h3>');
+            $.ajax({
+                url: '/user/security/login',
+                type: 'POST',
+                data: {
+                    'LoginForm[login]': 'superadmin',
+                    'LoginForm[password]': 'SuperAdmin123!',
+                    'ajax': 'login-form',
+                    '_csrf': csrfToken
+                },
+                dataType: 'json',
+                success: function(data) {
+                    $('#result').append('<p>AJAX Validation Response: ' + JSON.stringify(data) + '</p>');
+                    
+                    if ($.isArray(data) && data.length === 0) {
+                        $('#result').append('<p>✓ AJAX validation passed (empty array = no errors)</p>');
+                        
+                        // Test 3: Test actual form submission
+                        $('#result').append('<h3>Testing Form Submission:</h3>');
+                        $.ajax({
+                            url: '/user/security/login',
+                            type: 'POST',
+                            data: {
+                                'LoginForm[login]': 'superadmin',
+                                'LoginForm[password]': 'SuperAdmin123!',
+                                '_csrf': csrfToken
+                                // No 'ajax' parameter - this should trigger actual login
+                            },
+                            success: function(response, status, xhr) {
+                                // Check if we got redirected (successful login)
+                                if (xhr.getResponseHeader('Location') || response.indexOf('dashboard') !== -1 || response.indexOf('profile') !== -1) {
+                                    $('#result').append('<p>✓ Login successful! (Got redirect or dashboard content)</p>');
+                                } else if (response.indexOf('login-form') !== -1) {
+                                    $('#result').append('<p>✗ Login failed - still showing login form</p>');
+                                } else {
+                                    $('#result').append('<p>? Unexpected response - check manually</p>');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                if (xhr.status === 302 || xhr.status === 301) {
+                                    $('#result').append('<p>✓ Login successful! (Got redirect status: ' + xhr.status + ')</p>');
+                                } else {
+                                    $('#result').append('<p>✗ Form submission error: ' + status + ' - ' + error + '</p>');
+                                }
+                            }
+                        });
+                    } else {
+                        $('#result').append('<p>✗ AJAX validation failed: ' + JSON.stringify(data) + '</p>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#result').append('<p>✗ AJAX validation error: ' + status + ' - ' + error + '</p>');
+                }
+            });
+            
+        }).fail(function() {
+            $('#result').append('<p>✗ Failed to load login page</p>');
+        });
+    });
+    </script>
+</body>
+</html>

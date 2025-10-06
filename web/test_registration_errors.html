@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Error Testing</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .test-button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .test-button:hover { background: #0056b3; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-left: 4px solid #007bff; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+    </style>
+</head>
+<body>
+    <h1>Registration Error Handling Tests</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Duplicate Email Registration</h3>
+        <p>This test attempts to register with an email that already exists.</p>
+        <button class="test-button" onclick="testDuplicateEmail()">Test Duplicate Email</button>
+        <div id="result1" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 2: Invalid Country ID</h3>
+        <p>This test attempts to register with a non-existent country ID.</p>
+        <button class="test-button" onclick="testInvalidCountry()">Test Invalid Country</button>
+        <div id="result2" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 3: Missing Required Fields</h3>
+        <p>This test attempts to register with missing required fields.</p>
+        <button class="test-button" onclick="testMissingFields()">Test Missing Fields</button>
+        <div id="result3" class="result" style="display:none;"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 4: Password Mismatch</h3>
+        <p>This test attempts to register with mismatched passwords.</p>
+        <button class="test-button" onclick="testPasswordMismatch()">Test Password Mismatch</button>
+        <div id="result4" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        function getCsrfToken() {
+            return fetch('/user/registration/register')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const csrfInput = doc.querySelector('input[name="_csrf"]');
+                    return csrfInput ? csrfInput.value : null;
+                });
+        }
+
+        function showResult(resultId, message, isError = false) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.innerHTML = message;
+            resultDiv.className = 'result ' + (isError ? 'error' : 'success');
+            resultDiv.style.display = 'block';
+        }
+
+        function testDuplicateEmail() {
+            getCsrfToken().then(token => {
+                const formData = new FormData();
+                formData.append('_csrf', token);
+                formData.append('RegistrationForm[name]', 'Test User');
+                formData.append('RegistrationForm[email]', 'admin@example.com'); // Likely existing email
+                formData.append('RegistrationForm[password]', 'password123');
+                formData.append('RegistrationForm[password_repeat]', 'password123');
+                formData.append('RegistrationForm[mobile_no]', '1234567890');
+                formData.append('RegistrationForm[country_id]', '1');
+
+                fetch('/user/registration/register', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('alert-danger') || html.includes('This email address is already registered')) {
+                        showResult('result1', '✓ Test passed: Duplicate email error properly handled', false);
+                    } else {
+                        showResult('result1', '✗ Test failed: Duplicate email not properly detected', true);
+                    }
+                })
+                .catch(error => {
+                    showResult('result1', '✗ Test failed: ' + error.message, true);
+                });
+            });
+        }
+
+        function testInvalidCountry() {
+            getCsrfToken().then(token => {
+                const formData = new FormData();
+                formData.append('_csrf', token);
+                formData.append('RegistrationForm[name]', 'Test User');
+                formData.append('RegistrationForm[email]', 'test' + Date.now() + '@example.com');
+                formData.append('RegistrationForm[password]', 'password123');
+                formData.append('RegistrationForm[password_repeat]', 'password123');
+                formData.append('RegistrationForm[mobile_no]', '1234567890');
+                formData.append('RegistrationForm[country_id]', '99999'); // Invalid country ID
+
+                fetch('/user/registration/register', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('alert-danger') || html.includes('Country') || html.includes('does not exist')) {
+                        showResult('result2', '✓ Test passed: Invalid country error properly handled', false);
+                    } else {
+                        showResult('result2', '✗ Test failed: Invalid country not properly detected', true);
+                    }
+                })
+                .catch(error => {
+                    showResult('result2', '✗ Test failed: ' + error.message, true);
+                });
+            });
+        }
+
+        function testMissingFields() {
+            getCsrfToken().then(token => {
+                const formData = new FormData();
+                formData.append('_csrf', token);
+                // Intentionally missing required fields
+                formData.append('RegistrationForm[email]', 'test' + Date.now() + '@example.com');
+                formData.append('RegistrationForm[password]', 'password123');
+
+                fetch('/user/registration/register', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('alert-danger') || html.includes('cannot be blank') || html.includes('required')) {
+                        showResult('result3', '✓ Test passed: Missing fields error properly handled', false);
+                    } else {
+                        showResult('result3', '✗ Test failed: Missing fields not properly detected', true);
+                    }
+                })
+                .catch(error => {
+                    showResult('result3', '✗ Test failed: ' + error.message, true);
+                });
+            });
+        }
+
+        function testPasswordMismatch() {
+            getCsrfToken().then(token => {
+                const formData = new FormData();
+                formData.append('_csrf', token);
+                formData.append('RegistrationForm[name]', 'Test User');
+                formData.append('RegistrationForm[email]', 'test' + Date.now() + '@example.com');
+                formData.append('RegistrationForm[password]', 'password123');
+                formData.append('RegistrationForm[password_repeat]', 'differentpassword'); // Mismatched password
+                formData.append('RegistrationForm[mobile_no]', '1234567890');
+                formData.append('RegistrationForm[country_id]', '1');
+
+                fetch('/user/registration/register', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(html => {
+                    if (html.includes('alert-danger') || html.includes('Passwords do not match') || html.includes('password')) {
+                        showResult('result4', '✓ Test passed: Password mismatch error properly handled', false);
+                    } else {
+                        showResult('result4', '✗ Test failed: Password mismatch not properly detected', true);
+                    }
+                })
+                .catch(error => {
+                    showResult('result4', '✗ Test failed: ' + error.message, true);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

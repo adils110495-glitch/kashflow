@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Original Dektrium Login</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Test Original Dektrium Login</h1>
+    <div id="result"></div>
+    <button id="testLogin">Test Login Process</button>
+    
+    <script>
+    $(document).ready(function() {
+        $('#testLogin').click(function() {
+            $('#result').html('<p>Testing original Dektrium login functionality...</p>');
+            
+            // Get CSRF token from login page
+            $.get('/user/security/login', function(html) {
+                var csrfToken = $(html).find('meta[name="csrf-token"]').attr('content');
+                if (!csrfToken) {
+                    var csrfMatch = html.match(/name="_csrf"[^>]*value="([^"]*)"/i);
+                    csrfToken = csrfMatch ? csrfMatch[1] : null;
+                }
+                
+                $('#result').append('<p>✓ Login page loads successfully</p>');
+                $('#result').append('<p>CSRF Token: ' + (csrfToken ? 'Found' : 'Not found') + '</p>');
+                
+                if (!csrfToken) {
+                    $('#result').append('<p>✗ Cannot proceed without CSRF token</p>');
+                    return;
+                }
+                
+                // Test AJAX validation (this should return [] for valid credentials)
+                $('#result').append('<p>Testing AJAX validation...</p>');
+                $.ajax({
+                    url: '/user/security/login',
+                    type: 'POST',
+                    data: {
+                        'LoginForm[login]': 'superadmin',
+                        'LoginForm[password]': 'SuperAdmin123!',
+                        'LoginForm[rememberMe]': '0',
+                        'ajax': 'login-form',
+                        '_csrf': csrfToken
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#result').append('<p>AJAX Response: ' + JSON.stringify(data) + '</p>');
+                        
+                        if ($.isArray(data) && data.length === 0) {
+                            $('#result').append('<p>✓ AJAX validation passed (empty array = valid credentials)</p>');
+                            $('#result').append('<p><strong>The "[]null" you see is correct behavior!</strong></p>');
+                            $('#result').append('<p>This means:</p>');
+                            $('#result').append('<ul>');
+                            $('#result').append('<li>[] = AJAX validation passed (no errors)</li>');
+                            $('#result').append('<li>null = No additional response data</li>');
+                            $('#result').append('<li>The form should submit normally after this validation</li>');
+                            $('#result').append('</ul>');
+                            
+                            // Test actual login submission
+                            $('#result').append('<p>Testing actual form submission...</p>');
+                            $.ajax({
+                                url: '/user/security/login',
+                                type: 'POST',
+                                data: {
+                                    'LoginForm[login]': 'superadmin',
+                                    'LoginForm[password]': 'SuperAdmin123!',
+                                    'LoginForm[rememberMe]': '0',
+                                    '_csrf': csrfToken
+                                },
+                                success: function(response, status, xhr) {
+                                    // Check if login was successful
+                                    if (response.indexOf('Sign in') === -1) {
+                                        $('#result').append('<p>✓ Login successful! (No login form in response)</p>');
+                                    } else {
+                                        $('#result').append('<p>? Login response received, check manually</p>');
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    if (xhr.status === 302) {
+                                        $('#result').append('<p>✓ Login successful! (Got redirect)</p>');
+                                    } else {
+                                        $('#result').append('<p>Login submission status: ' + xhr.status + '</p>');
+                                    }
+                                }
+                            });
+                        } else {
+                            $('#result').append('<p>✗ AJAX validation failed: ' + JSON.stringify(data) + '</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#result').append('<p>✗ AJAX validation error: ' + status + '</p>');
+                    }
+                });
+            }).fail(function() {
+                $('#result').append('<p>✗ Failed to load login page</p>');
+            });
+        });
+        
+        // Auto-run the test
+        $('#testLogin').click();
+    });
+    </script>
+</body>
+</html>

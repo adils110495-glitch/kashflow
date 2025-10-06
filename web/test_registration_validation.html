@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration Form Validation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Registration Form Validation Test</h1>
+    <div id="result"></div>
+    <button id="testBtn">Test Form Validation</button>
+
+    <script>
+    $(document).ready(function() {
+        $('#testBtn').click(function() {
+            $('#result').html('<p>Loading registration form...</p>');
+            
+            // Load the registration form
+            $.get('/user/registration/register').done(function(html) {
+                $('#result').append('<p>✓ Registration form loaded</p>');
+                
+                // Extract CSRF token
+                var csrfMatch = html.match(/name="_csrf"[^>]*value="([^"]*)"/); 
+                if (csrfMatch) {
+                    var csrfToken = csrfMatch[1];
+                    $('#result').append('<p>✓ CSRF token found: ' + csrfToken.substring(0,10) + '...</p>');
+                    
+                    // Test AJAX validation with empty form
+                    $('#result').append('<p>Testing AJAX validation with empty fields...</p>');
+                    
+                    $.ajax({
+                        url: '/user/registration/register',
+                        type: 'POST',
+                        data: {
+                            'RegistrationForm[name]': '',
+                            'RegistrationForm[email]': '',
+                            'RegistrationForm[country_id]': '',
+                            'RegistrationForm[mobile_no]': '',
+                            'RegistrationForm[referral_code]': '',
+                            'RegistrationForm[password]': '',
+                            'RegistrationForm[password_repeat]': '',
+                            '_csrf': csrfToken,
+                            'ajax': 'registration-form'
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            $('#result').append('<p><strong>✓ AJAX Validation Success!</strong></p>');
+                            $('#result').append('<p>Validation Response:</p>');
+                            $('#result').append('<pre>' + JSON.stringify(response, null, 2) + '</pre>');
+                            
+                            if (response && typeof response === 'object') {
+                                var errorCount = Object.keys(response).length;
+                                $('#result').append('<p>Found ' + errorCount + ' validation errors (expected for empty form)</p>');
+                                
+                                if (errorCount > 0) {
+                                    $('#result').append('<p><strong>✓ Form validation is working correctly!</strong></p>');
+                                    $('#result').append('<p>The register button validation should now work properly.</p>');
+                                } else {
+                                    $('#result').append('<p>⚠ No validation errors returned for empty form</p>');
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            $('#result').append('<p><strong>✗ AJAX Validation Failed</strong></p>');
+                            $('#result').append('<p>Error: ' + error + '</p>');
+                            $('#result').append('<p>Status: ' + xhr.status + '</p>');
+                            $('#result').append('<p>Response: ' + xhr.responseText + '</p>');
+                        }
+                    });
+                } else {
+                    $('#result').append('<p>✗ CSRF token not found in form</p>');
+                }
+            }).fail(function() {
+                $('#result').append('<p>✗ Failed to load registration form</p>');
+            });
+        });
+    });
+    </script>
+</body>
+</html>

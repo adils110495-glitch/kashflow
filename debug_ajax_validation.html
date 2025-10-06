@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug AJAX Validation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Debug AJAX Validation</h1>
+    <div id="result"></div>
+    <button id="testValidation">Test Validation</button>
+
+    <script>
+    $(document).ready(function() {
+        $('#testValidation').click(function() {
+            $('#result').html('<p>Loading login page to get CSRF token...</p>');
+            
+            // First get the login page to extract CSRF token
+            $.get('/user/security/login').done(function(html) {
+                var csrfToken = $(html).find('input[name="_csrf"]').val();
+                $('#result').append('<p>CSRF Token: ' + csrfToken + '</p>');
+                
+                // Test empty form validation
+                $('#result').append('<h3>Testing Empty Form Validation:</h3>');
+                $.ajax({
+                    url: '/user/security/login',
+                    type: 'POST',
+                    data: {
+                        '_csrf': csrfToken,
+                        'ajax': 'login-form',
+                        'LoginForm[login]': '',
+                        'LoginForm[password]': '',
+                        'LoginForm[rememberMe]': '0'
+                    },
+                    success: function(response) {
+                        $('#result').append('<p><strong>Server Response:</strong></p>');
+                        $('#result').append('<pre>' + JSON.stringify(response, null, 2) + '</pre>');
+                        
+                        $('#result').append('<p><strong>Response Analysis:</strong></p>');
+                        if (response && typeof response === 'object') {
+                            $('#result').append('<p>Response is an object with keys: ' + Object.keys(response).join(', ') + '</p>');
+                            
+                            // Check what the form expects
+                            $('#result').append('<h3>Checking Form Configuration:</h3>');
+                            
+                            // Load the actual login form to see what attribute IDs it expects
+                            $.get('/user/security/login').done(function(formHtml) {
+                                var $formHtml = $(formHtml);
+                                var $loginInput = $formHtml.find('input[name="LoginForm[login]"]');
+                                var $passwordInput = $formHtml.find('input[name="LoginForm[password]"]');
+                                
+                                $('#result').append('<p>Login input ID: ' + $loginInput.attr('id') + '</p>');
+                                $('#result').append('<p>Password input ID: ' + $passwordInput.attr('id') + '</p>');
+                                
+                                // Check if the response keys match the expected attribute IDs
+                                var expectedLoginId = $loginInput.attr('id');
+                                var expectedPasswordId = $passwordInput.attr('id');
+                                
+                                $('#result').append('<p><strong>Expected vs Actual:</strong></p>');
+                                $('#result').append('<p>Expected login ID: ' + expectedLoginId + '</p>');
+                                $('#result').append('<p>Actual response keys: ' + Object.keys(response).join(', ') + '</p>');
+                                
+                                if (response[expectedLoginId]) {
+                                    $('#result').append('<p>✓ Login error found with correct ID</p>');
+                                } else {
+                                    $('#result').append('<p>✗ Login error NOT found with expected ID</p>');
+                                }
+                                
+                                if (response[expectedPasswordId]) {
+                                    $('#result').append('<p>✓ Password error found with correct ID</p>');
+                                } else {
+                                    $('#result').append('<p>✗ Password error NOT found with expected ID</p>');
+                                }
+                                
+                                // Show the mismatch
+                                $('#result').append('<h3>Key Mismatch Analysis:</h3>');
+                                $('#result').append('<p>This explains why validation errors are not showing in the UI!</p>');
+                                $('#result').append('<p>The server returns errors with keys like "login-form-login" but the JavaScript expects keys like "loginform-login"</p>');
+                            });
+                        } else {
+                            $('#result').append('<p>Response is not an object: ' + typeof response + '</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#result').append('<p>✗ AJAX Error: ' + error + '</p>');
+                        $('#result').append('<p>Status: ' + status + '</p>');
+                        $('#result').append('<p>Response: ' + xhr.responseText + '</p>');
+                    }
+                });
+                
+            }).fail(function() {
+                $('#result').append('<p>✗ Failed to load login page</p>');
+            });
+        });
+    });
+    </script>
+</body>
+</html>

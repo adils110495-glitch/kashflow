@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test AJAX Fix</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Test AJAX Validation Fix</h1>
+    <div id="result"></div>
+    <button id="testFix">Test Fix</button>
+
+    <script>
+    $(document).ready(function() {
+        $('#testFix').click(function() {
+            $('#result').html('<p>Testing AJAX validation fix...</p>');
+            
+            // Get CSRF token first
+            $.get('/user/security/login').done(function(html) {
+                var csrfToken = $(html).find('input[name="_csrf"]').val();
+                $('#result').append('<p>CSRF Token obtained</p>');
+                
+                // Test with empty fields (should return validation errors)
+                $('#result').append('<h3>Testing Empty Fields:</h3>');
+                $.ajax({
+                    url: '/user/security/login',
+                    type: 'POST',
+                    data: {
+                        '_csrf': csrfToken,
+                        'ajax': 'login-form',
+                        'LoginForm[login]': '',
+                        'LoginForm[password]': '',
+                        'LoginForm[rememberMe]': '0'
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#result').append('<p><strong>Raw Response:</strong></p>');
+                        $('#result').append('<pre>' + JSON.stringify(response, null, 2) + '</pre>');
+                        
+                        if (response && typeof response === 'object' && Object.keys(response).length > 0) {
+                            $('#result').append('<p>✓ Validation errors returned correctly</p>');
+                            $('#result').append('<p>✓ No "null" appended to response</p>');
+                        } else {
+                            $('#result').append('<p>✗ Unexpected response format</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#result').append('<p>✗ AJAX Error: ' + error + '</p>');
+                        $('#result').append('<p>Response Text: ' + xhr.responseText + '</p>');
+                    }
+                });
+                
+                // Test with valid credentials (should return empty array)
+                setTimeout(function() {
+                    $('#result').append('<h3>Testing Valid Credentials:</h3>');
+                    $.ajax({
+                        url: '/user/security/login',
+                        type: 'POST',
+                        data: {
+                            '_csrf': csrfToken,
+                            'ajax': 'login-form',
+                            'LoginForm[login]': 'superadmin',
+                            'LoginForm[password]': 'SuperAdmin123!',
+                            'LoginForm[rememberMe]': '0'
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            $('#result').append('<p><strong>Raw Response:</strong></p>');
+                            $('#result').append('<pre>' + JSON.stringify(response, null, 2) + '</pre>');
+                            
+                            if (Array.isArray(response) && response.length === 0) {
+                                $('#result').append('<p>✓ Valid credentials - empty array returned</p>');
+                                $('#result').append('<p>✓ No "null" appended to response</p>');
+                            } else {
+                                $('#result').append('<p>✗ Unexpected response for valid credentials</p>');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            $('#result').append('<p>✗ AJAX Error: ' + error + '</p>');
+                            $('#result').append('<p>Response Text: ' + xhr.responseText + '</p>');
+                        }
+                    });
+                }, 1000);
+            });
+        });
+    });
+    </script>
+</body>
+</html>

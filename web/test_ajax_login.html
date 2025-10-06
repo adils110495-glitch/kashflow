@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test AJAX Login</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Test AJAX Login</h1>
+    <div id="result"></div>
+    
+    <script>
+    $(document).ready(function() {
+        // First get CSRF token
+        $.get('/user/security/login', function(html) {
+            var csrfToken = $(html).find('meta[name="csrf-token"]').attr('content');
+            if (!csrfToken) {
+                // Try to find it in a form
+                var csrfInput = $(html).find('input[name="_csrf"]').val();
+                csrfToken = csrfInput;
+            }
+            
+            $('#result').append('<p>CSRF Token: ' + (csrfToken || 'Not found') + '</p>');
+            
+            // Test AJAX validation endpoint
+            $.ajax({
+                url: '/user/security/login',
+                type: 'POST',
+                data: {
+                    'LoginForm[login]': 'superadmin',
+                    'LoginForm[password]': 'SuperAdmin123!',
+                    'ajax': 'login-form',
+                    '_csrf': csrfToken
+                },
+                dataType: 'json',
+                success: function(data) {
+                    $('#result').append('<h3>AJAX Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>');
+                    console.log('AJAX Response:', data);
+                },
+                error: function(xhr, status, error) {
+                    $('#result').append('<h3>AJAX Error:</h3><p>Status: ' + status + '</p><p>Error: ' + error + '</p><p>Response Text: ' + xhr.responseText + '</p>');
+                    console.log('AJAX Error:', xhr, status, error);
+                    console.log('Response Text:', xhr.responseText);
+                }
+            });
+        }).fail(function() {
+            $('#result').append('<p>Failed to get login page</p>');
+        });
+    });
+    </script>
+</body>
+</html>

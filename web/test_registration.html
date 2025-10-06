@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Registration Form Test</h1>
+    <div id="result"></div>
+    <button id="testForm">Test Registration Form</button>
+    
+    <script>
+    $(document).ready(function() {
+        $('#testForm').click(function() {
+            $('#result').html('<p>Loading registration page...</p>');
+            
+            // Load the registration page
+            $.get('/user/registration/register', function(html) {
+                $('#result').append('<p>✓ Registration page loaded</p>');
+                
+                // Check for JavaScript errors in console
+                var originalConsoleError = console.error;
+                var errors = [];
+                console.error = function(message) {
+                    errors.push(message);
+                    originalConsoleError.apply(console, arguments);
+                };
+                
+                // Create a temporary container and inject the HTML
+                var $temp = $('<div>').html(html);
+                
+                // Extract and execute scripts
+                var scripts = $temp.find('script');
+                $('#result').append('<p>Found ' + scripts.length + ' script tags</p>');
+                
+                scripts.each(function(i, script) {
+                    if (script.src) {
+                        $('#result').append('<p>Loading script: ' + script.src + '</p>');
+                        $.getScript(script.src).fail(function() {
+                            $('#result').append('<p>✗ Failed to load: ' + script.src + '</p>');
+                        });
+                    } else if (script.innerHTML) {
+                        try {
+                            eval(script.innerHTML);
+                            $('#result').append('<p>✓ Executed inline script</p>');
+                        } catch (e) {
+                            $('#result').append('<p>✗ Script error: ' + e.message + '</p>');
+                            errors.push('Script execution error: ' + e.message);
+                        }
+                    }
+                });
+                
+                // Check for form validation setup
+                setTimeout(function() {
+                    if (typeof jQuery !== 'undefined' && jQuery.fn.yiiActiveForm) {
+                        $('#result').append('<p>✓ Yii ActiveForm plugin loaded</p>');
+                        
+                        // Check if registration form is initialized
+                        if ($('#registration-form').length > 0) {
+                            $('#result').append('<p>✓ Registration form found</p>');
+                            
+                            // Try to trigger validation
+                            var $form = $('#registration-form');
+                            if ($form.data('yiiActiveForm')) {
+                                $('#result').append('<p>✓ Form validation initialized</p>');
+                            } else {
+                                $('#result').append('<p>✗ Form validation NOT initialized</p>');
+                            }
+                        } else {
+                            $('#result').append('<p>✗ Registration form not found</p>');
+                        }
+                    } else {
+                        $('#result').append('<p>✗ Yii ActiveForm plugin not loaded</p>');
+                    }
+                    
+                    // Show any JavaScript errors
+                    if (errors.length > 0) {
+                        $('#result').append('<p><strong>JavaScript Errors:</strong></p>');
+                        errors.forEach(function(error) {
+                            $('#result').append('<p style="color: red;">- ' + error + '</p>');
+                        });
+                    } else {
+                        $('#result').append('<p>✓ No JavaScript errors detected</p>');
+                    }
+                }, 2000);
+                
+            }).fail(function() {
+                $('#result').append('<p>✗ Failed to load registration page</p>');
+            });
+        });
+    });
+    </script>
+</body>
+</html>
