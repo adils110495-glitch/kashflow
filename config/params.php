@@ -9,14 +9,13 @@ return [
     
     // Mailer configuration
     'mailer' => [
-        'host' => 'mail.leanport.info',
-        'username' => 'adil.saifi@leanport.info',
-        'password' => 'Mainuddin@123',
-        'port' => 587,
-        //'dsn' => 'smtp://your-email@gmail.com:your-app-password@smtp.gmail.com:587',
-        'encryption' => 'tls',
+        'host' => getenv('MAILER_HOST'),
+        'username' => getenv('MAILER_USERNAME'),
+        'password' => getenv('MAILER_PASSWORD'),
+        'port' => getenv('MAILER_PORT'),
+        'encryption' => getenv('MAILER_ENCRYPTION'),
         'from' => [
-            'noreply@example.com' => 'Kashflow',
+            getenv('MAILER_FROM_EMAIL') => getenv('MAILER_FROM_NAME'),
         ],
     ],
 ];
