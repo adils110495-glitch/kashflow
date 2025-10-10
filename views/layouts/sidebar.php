@@ -64,6 +64,16 @@ use yii\helpers\Html;
 					<li class="nav-item">
 					    <a href="<?= \yii\helpers\Url::to(['/customer/income']) ?>" class="nav-link "><span class="pcoded-micon"><i class="feather icon-credit-card"></i></span><span class="pcoded-mtext">Income</span></a>
 					</li>
+					<li class="nav-item pcoded-menu-caption">
+						<label>Payment</label>
+					</li>
+					<li class="nav-item pcoded-hasmenu <?= Yii::$app->controller->id === 'admin' && in_array(Yii::$app->controller->action->id, ['withdrawals', 'pending-withdrawals', 'all-withdrawals']) ? 'pcoded-trigger' : '' ?>">
+						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-minus-circle"></i></span><span class="pcoded-mtext">Withdrawal</span></a>
+						<ul class="pcoded-submenu">
+							<li><a href="<?= \yii\helpers\Url::to(['/admin/withdrawals']) ?>">All Withdrawals</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/admin/pending-withdrawals']) ?>">Pending Requests</a></li>
+						</ul>
+					</li>
 					<li class="nav-item">
 					    <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline']) . Html::submitButton('<span class="pcoded-micon"><i class="feather icon-log-out"></i></span><span class="pcoded-mtext">Logout</span>', ['class' => 'btn btn-link logout nav-link']) . Html::endForm() ?>
 					</li>

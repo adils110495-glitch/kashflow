@@ -252,6 +252,106 @@ class CustomerDashboardController extends Controller
     }
 
     /**
+     * Displays withdrawal page
+     */
+    public function actionWithdrawal()
+    {
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            throw new NotFoundHttpException('Customer not found.');
+        }
+
+        // Get customer's current balance
+        $currentBalance = $customer->getLedgerBalance();
+        
+        // Get recent withdrawal history from withdrawal table
+        $withdrawalHistory = \app\models\Withdrawal::getCustomerWithdrawals($customer->id, 10)->all();
+
+        if (Yii::$app->request->isPost) {
+            $amount = Yii::$app->request->post('amount');
+            $accountDetails = Yii::$app->request->post('account_details');
+            
+            // Validate withdrawal request
+            if (empty($amount) || $amount <= 0) {
+                Yii::$app->session->setFlash('error', 'Please enter a valid withdrawal amount.');
+            } elseif ($amount > $currentBalance) {
+                Yii::$app->session->setFlash('error', 'Insufficient balance for withdrawal.');
+            } elseif (empty($accountDetails)) {
+                Yii::$app->session->setFlash('error', 'Please provide account details.');
+            } else {
+                // Create withdrawal request
+                $result = $this->processWithdrawalRequest($customer, $amount, $accountDetails);
+                
+                if ($result['success']) {
+                    Yii::$app->session->setFlash('success', $result['message']);
+                    return $this->redirect(['withdrawal']);
+                } else {
+                    Yii::$app->session->setFlash('error', $result['message']);
+                }
+            }
+        }
+
+        return $this->render('withdrawal', [
+            'customer' => $customer,
+            'currentBalance' => $currentBalance,
+            'withdrawalHistory' => $withdrawalHistory,
+        ]);
+    }
+
+    /**
+     * Process withdrawal request
+     * @param Customer $customer
+     * @param float $amount
+     * @param string $accountDetails
+     * @return array
+     */
+    private function processWithdrawalRequest($customer, $amount, $accountDetails)
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        
+        try {
+            // Create withdrawal request in withdrawal table
+            $withdrawal = new \app\models\Withdrawal();
+            $withdrawal->customer_id = $customer->id;
+            $withdrawal->amount = $amount;
+            $withdrawal->date = date('Y-m-d');
+            $withdrawal->status = \app\models\Withdrawal::STATUS_PENDING;
+            $withdrawal->comment = "Account Details: {$accountDetails}";
+            $withdrawal->action_by = Yii::$app->user->id;
+            $withdrawal->action_date_time = date('Y-m-d H:i:s');
+            
+            if (!$withdrawal->save()) {
+                throw new \Exception('Failed to create withdrawal request: ' . implode(', ', $withdrawal->getFirstErrors()));
+            }
+            
+            // Log activity
+            $customer->logActivity('withdrawal_request', "Withdrawal request of $" . number_format($amount, 2), [
+                'amount' => $amount,
+                'account_details' => $accountDetails,
+                'withdrawal_id' => $withdrawal->id
+            ]);
+            
+            $transaction->commit();
+            
+            return [
+                'success' => true,
+                'message' => 'Withdrawal request submitted successfully. Your request is pending admin approval.'
+            ];
+            
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            
+            return [
+                'success' => false,
+                'message' => 'Failed to process withdrawal request: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Upgrade package action
      */
     public function actionUpgrade()

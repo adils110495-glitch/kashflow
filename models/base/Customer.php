@@ -28,6 +28,8 @@ use yii\behaviors\TimestampBehavior;
  * @property \app\models\CustomerPackage[] $customerPackages
  * @property \app\models\CustomerActivity[] $activities
  * @property \app\models\Income[] $incomes
+ * @property \app\models\Ledger[] $ledgerEntries
+ * @property \app\models\Withdrawal[] $withdrawals
  */
 class Customer extends ActiveRecord
 {
@@ -173,5 +175,25 @@ class Customer extends ActiveRecord
     public function getIncomes()
     {
         return $this->hasMany(\app\models\Income::class, ['customer_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[LedgerEntries]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLedgerEntries()
+    {
+        return $this->hasMany(\app\models\Ledger::class, ['customer_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Withdrawals]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getWithdrawals()
+    {
+        return $this->hasMany(\app\models\Withdrawal::class, ['customer_id' => 'id']);
     }
 }

@@ -101,6 +101,23 @@ class Customer extends BaseCustomer
     }
 
     /**
+     * Get customer ledger entries relation
+     */
+    public function getLedgerEntries()
+    {
+        return $this->hasMany(Ledger::class, ['customer_id' => 'id']);
+    }
+
+    /**
+     * Get active customer ledger entries
+     */
+    public function getActiveLedgerEntries()
+    {
+        return $this->hasMany(Ledger::class, ['customer_id' => 'id'])
+            ->where(['status' => Ledger::STATUS_ACTIVE]);
+    }
+
+    /**
      * Get active customer incomes
      */
     public function getActiveIncomes()
@@ -147,24 +164,188 @@ class Customer extends BaseCustomer
      */
     public static function calculatePackageStats($customers)
     {
+        // Get all active packages from database
+        $allPackages = \app\models\Package::find()
+            ->where(['status' => [\app\models\Package::STATUS_ACTIVE, \app\models\Package::STATUS_PREMIUM]])
+            ->orderBy(['amount' => SORT_ASC])
+            ->all();
+
         $packageStats = [];
         $totalCustomers = count($customers);
 
-        foreach ($customers as $customer) {
+        // Initialize stats for all packages
+        foreach ($allPackages as $package) {
+            $packageStats[$package->name] = [
+                'id' => $package->id,
+                'name' => $package->name,
+                'amount' => $package->amount,
+                'count' => 0,
+                'percentage' => 0,
+                'paid_count' => 0,
+                'unpaid_count' => 0,
+                'paid_percentage' => 0,
+                'unpaid_percentage' => 0
+            ];
+        }
+
+        // Add "No Package" entry
+        $packageStats['No Package'] = [
+            'id' => 0,
+            'name' => 'No Package',
+            'amount' => 0,
+            'count' => 0,
+            'percentage' => 0,
+            'paid_count' => 0,
+            'unpaid_count' => 0,
+            'paid_percentage' => 0,
+            'unpaid_percentage' => 0
+        ];
+
+        // Count customers by package and payment status
+        $customersId = array_column($customers,'id');
+        $customers = Customer::find()
+            ->where(['id' => $customersId])
+            ->all();
+        foreach ($customers as $customer ) {
             $packageName = $customer->currentPackage->name ?? 'No Package';
-            if (!isset($packageStats[$packageName])) {
-                $packageStats[$packageName] = [
-                    'count' => 0,
-                    'percentage' => 0
-                ];
+            
+            if (isset($packageStats[$packageName])) {
+                $packageStats[$packageName]['count']++;
+                
+                // Check payment status from customer packages
+                $customerPackage = \app\models\CustomerPackage::find()
+                    ->where(['customer_id' => $customer->id, 'package_id' => $customer->currentPackage->id ?? 0])
+                    ->orderBy(['created_at' => SORT_DESC])
+                    ->one();
+                
+                if ($customerPackage) {
+                    if ($customerPackage->status == \app\models\CustomerPackage::STATUS_ACTIVE) {
+                        $packageStats[$packageName]['paid_count']++;
+                    } else {
+                        $packageStats[$packageName]['unpaid_count']++;
+                    }
+                } else {
+                    $packageStats[$packageName]['unpaid_count']++;
+                }
             }
-            $packageStats[$packageName]['count']++;
         }
 
         // Calculate percentages
-        foreach ($packageStats as $package => &$stats) {
+        foreach ($packageStats as $packageName => &$stats) {
             $stats['percentage'] = $totalCustomers > 0 ? round(($stats['count'] / $totalCustomers) * 100, 2) : 0;
+            $stats['paid_percentage'] = $totalCustomers > 0 ? round(($stats['paid_count'] / $totalCustomers) * 100, 2) : 0;
+            $stats['unpaid_percentage'] = $totalCustomers > 0 ? round(($stats['unpaid_count'] / $totalCustomers) * 100, 2) : 0;
         }
+
+        // Create summary stats in the format expected by the view
+        $summaryStats = [
+            'free' => [
+                'unpaid' => isset($packageStats['No Package']) ? $packageStats['No Package']['unpaid_count'] : 0,
+                'paid' => isset($packageStats['No Package']) ? $packageStats['No Package']['paid_count'] : 0
+            ],
+            'paid' => [
+                'paid' => 0,
+                'unpaid' => 0
+            ],
+            'total' => [
+                'paid' => 0,
+                'unpaid' => 0
+            ]
+        ];
+
+        // Calculate paid package totals
+        foreach ($packageStats as $packageName => $stats) {
+            if ($packageName !== 'No Package') {
+                $summaryStats['paid']['paid'] += $stats['paid_count'];
+                $summaryStats['paid']['unpaid'] += $stats['unpaid_count'];
+            }
+            $summaryStats['total']['paid'] += $stats['paid_count'];
+            $summaryStats['total']['unpaid'] += $stats['unpaid_count'];
+        }
+
+        return $summaryStats;
+    }
+
+    /**
+     * Calculate detailed package statistics for customers (for admin/customer views)
+     * @param array $customers
+     * @return array
+     */
+    public static function calculateDetailedPackageStats($customers)
+    {
+        // Get all active packages from database
+        $allPackages = \app\models\Package::find()
+            ->where(['status' => [\app\models\Package::STATUS_ACTIVE, \app\models\Package::STATUS_PREMIUM]])
+            ->orderBy(['amount' => SORT_ASC])
+            ->all();
+
+        $packageStats = [];
+        $totalCustomers = count($customers);
+
+        // Initialize stats for all packages
+        foreach ($allPackages as $package) {
+            $packageStats[$package->name] = [
+                'id' => $package->id,
+                'name' => $package->name,
+                'amount' => $package->amount,
+                'count' => 0,
+                'percentage' => 0,
+                'paid_count' => 0,
+                'unpaid_count' => 0,
+                'paid_percentage' => 0,
+                'unpaid_percentage' => 0
+            ];
+        }
+
+        // Add "No Package" entry
+        $packageStats['No Package'] = [
+            'id' => 0,
+            'name' => 'No Package',
+            'amount' => 0,
+            'count' => 0,
+            'percentage' => 0,
+            'paid_count' => 0,
+            'unpaid_count' => 0,
+            'paid_percentage' => 0,
+            'unpaid_percentage' => 0
+        ];
+
+        // Count customers by package and payment status
+        foreach ($customers as $customer) {
+            $packageName = $customer->currentPackage->name ?? 'No Package';
+            
+            if (isset($packageStats[$packageName])) {
+                $packageStats[$packageName]['count']++;
+                
+                // Check payment status from customer packages
+                $customerPackage = \app\models\CustomerPackage::find()
+                    ->where(['customer_id' => $customer->id, 'package_id' => $customer->currentPackage->id ?? 0])
+                    ->orderBy(['created_at' => SORT_DESC])
+                    ->one();
+                
+                if ($customerPackage) {
+                    if ($customerPackage->status == \app\models\CustomerPackage::STATUS_ACTIVE) {
+                        $packageStats[$packageName]['paid_count']++;
+                    } else {
+                        $packageStats[$packageName]['unpaid_count']++;
+                    }
+                } else {
+                    $packageStats[$packageName]['unpaid_count']++;
+                }
+            }
+        }
+
+        // Calculate percentages
+        foreach ($packageStats as $packageName => &$stats) {
+            $stats['percentage'] = $totalCustomers > 0 ? round(($stats['count'] / $totalCustomers) * 100, 2) : 0;
+            $stats['paid_percentage'] = $totalCustomers > 0 ? round(($stats['paid_count'] / $totalCustomers) * 100, 2) : 0;
+            $stats['unpaid_percentage'] = $totalCustomers > 0 ? round(($stats['unpaid_count'] / $totalCustomers) * 100, 2) : 0;
+        }
+
+        // Remove packages with zero count
+        $packageStats = array_filter($packageStats, function($stats) {
+            return $stats['count'] > 0;
+        });
 
         return $packageStats;
     }
@@ -346,40 +527,109 @@ class Customer extends BaseCustomer
             ->all();
 
         $totalIncome = 0;
+        $roiIncome = 0;
+        $levelIncome = 0;
         $monthlyIncome = 0;
-        $weeklyIncome = 0;
-        $dailyIncome = 0;
+        $pendingIncome = 0;
+        $activeIncome = 0;
 
         $currentMonth = date('Y-m');
-        $currentWeek = date('Y-W');
-        $currentDate = date('Y-m-d');
 
         foreach ($incomes as $income) {
             $totalIncome += $income->amount;
             
-            $incomeDate = date('Y-m-d', $income->created_at);
-            $incomeMonth = date('Y-m', $income->created_at);
-            $incomeWeek = date('Y-W', $income->created_at);
+            // Calculate income by type
+            if ($income->type == Income::TYPE_ROI) {
+                $roiIncome += $income->amount;
+            } elseif ($income->type == Income::TYPE_LEVEL_INCOME) {
+                $levelIncome += $income->amount;
+            }
             
+            // Calculate income by status
+            if ($income->status == Income::STATUS_PENDING) {
+                $pendingIncome += $income->amount;
+            } elseif ($income->status == Income::STATUS_ACTIVE) {
+                $activeIncome += $income->amount;
+            }
+            
+            // Calculate monthly income
+            $incomeMonth = date('Y-m', strtotime($income->date));
             if ($incomeMonth === $currentMonth) {
                 $monthlyIncome += $income->amount;
-            }
-            
-            if ($incomeWeek === $currentWeek) {
-                $weeklyIncome += $income->amount;
-            }
-            
-            if ($incomeDate === $currentDate) {
-                $dailyIncome += $income->amount;
             }
         }
 
         return [
-            'total' => $totalIncome,
-            'monthly' => $monthlyIncome,
-            'weekly' => $weeklyIncome,
-            'daily' => $dailyIncome
+            'total_income' => $totalIncome,
+            'roi_income' => $roiIncome,
+            'level_income' => $levelIncome,
+            'monthly_income' => $monthlyIncome,
+            'pending_income' => $pendingIncome,
+            'active_income' => $activeIncome
         ];
+    }
+
+    /**
+     * Get customer's current ledger balance (Total Income - Withdrawals)
+     * @return float
+     */
+    public function getLedgerBalance()
+    {
+        return Ledger::getCustomerBalance($this->id);
+    }
+
+    /**
+     * Get customer's total income
+     * @return float
+     */
+    public function getTotalIncome()
+    {
+        return Ledger::getCustomerTotalIncome($this->id);
+    }
+
+    /**
+     * Get customer's total withdrawals
+     * @return float
+     */
+    public function getTotalWithdrawals()
+    {
+        return Ledger::getCustomerTotalWithdrawals($this->id);
+    }
+
+    /**
+     * Add debit entry to customer's ledger
+     * @param float $amount
+     * @param int $actionBy
+     * @param int $type
+     * @param string $date
+     * @return bool
+     */
+    public function addDebitEntry($amount, $actionBy, $type = Ledger::TYPE_TOPUP, $date = null)
+    {
+        return Ledger::createDebit($this->id, $amount, $actionBy, $type, $date);
+    }
+
+    /**
+     * Add credit entry to customer's ledger
+     * @param float $amount
+     * @param int $actionBy
+     * @param int $type
+     * @param string $date
+     * @return bool
+     */
+    public function addCreditEntry($amount, $actionBy, $type = Ledger::TYPE_TOPUP, $date = null)
+    {
+        return Ledger::createCredit($this->id, $amount, $actionBy, $type, $date);
+    }
+
+    /**
+     * Get customer's recent ledger entries
+     * @param int $limit
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRecentLedgerEntries($limit = 10)
+    {
+        return Ledger::getCustomerLedger($this->id, $limit);
     }
 
     /**
@@ -678,7 +928,7 @@ class Customer extends BaseCustomer
                     ->joinWith('user')
                     ->where(['user.username' => $currentReferralCode])
                     ->one();
-                if( $referrer->status == $referrer::STATUS_INACTIVE ){
+                if( $referrer->status == self::STATUS_INACTIVE ){
                     break; // No more referrers in the chain
                 }
                 if (!$referrer) {

@@ -264,9 +264,9 @@ class CustomerController extends Controller
         // Build level team hierarchy using the same method as customer-dashboard
         $levelTeam = Customer::buildLevelTeam($usernameFilter, $usernameFilter, $fromDate, $toDate, $level, $status);
         
-        // Calculate package statistics using the same method as customer-dashboard
+        // Calculate detailed package statistics for customer view
         $allLevelCustomers = Customer::getAllLevelCustomersFromTeam($levelTeam);
-        $packageStats = Customer::calculatePackageStats($allLevelCustomers);
+        $packageStats = Customer::calculateDetailedPackageStats($allLevelCustomers);
         
         return $this->render('level-team', [
             'customer' => $customer,

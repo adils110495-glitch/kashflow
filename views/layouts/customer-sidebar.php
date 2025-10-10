@@ -72,6 +72,18 @@ $customer = Customer::find()
                     </a>
                 </li>
                 
+                <!-- Payment Section -->
+                <li class="nav-item pcoded-menu-caption">
+                    <label>Payment</label>
+                </li>
+                
+                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'withdrawal' ? 'active' : '' ?>">
+                    <a href="<?= Url::to(['/customer-dashboard/withdrawal']) ?>" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-minus-circle"></i></span>
+                        <span class="pcoded-mtext">Withdrawal</span>
+                    </a>
+                </li>
+                
                 <!-- Account Section -->
                 <li class="nav-item pcoded-menu-caption">
                     <label>Account</label>

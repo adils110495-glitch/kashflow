@@ -156,13 +156,7 @@ $levelCounts = calculateLevelCounts($levelTeam);
                         
                         <div class="col-md-2">
                             <?= Html::label('Level', 'level', ['class' => 'form-label']) ?>
-                            <?= Html::dropDownList('level', $level, [
-                                '1' => 'Level 1',
-                                '2' => 'Level 2',
-                                '3' => 'Level 3',
-                                '4' => 'Level 4',
-                                '5' => 'Level 5'
-                            ], ['class' => 'form-select', 'prompt' => 'All Levels']) ?>
+                            <?= Html::dropDownList('level', $level, \app\models\LevelPlan::getLevelOptions(), ['class' => 'form-select', 'prompt' => 'All Levels']) ?>
                         </div>
                         
                         <div class="col-md-2">
@@ -188,17 +182,22 @@ $levelCounts = calculateLevelCounts($levelTeam);
                     <div class="level-stats mb-4">
                         <h5><i class="fas fa-chart-bar"></i> Level-wise Statistics</h5>
                         <div class="row">
-                            <?php for ($i = 1; $i <= 10; $i++): ?>
+                            <?php 
+                            // Get all active levels from LevelPlan table
+                            $activeLevels = \app\models\LevelPlan::getActiveLevels()->all();
+                            $colors = ['primary', 'success', 'warning', 'danger', 'info', 'secondary', 'dark', 'light'];
+                            ?>
+                            <?php foreach ($activeLevels as $index => $levelPlan): ?>
                                 <div class="col-md-2 col-sm-4 col-6 mb-3">
-                                    <div class="info-box bg-<?= $i <= 3 ? 'primary' : ($i <= 6 ? 'info' : 'secondary') ?>">
+                                    <div class="info-box bg-<?= $colors[$index % count($colors)] ?>">
                                         <span class="info-box-icon"><i class="fas fa-layer-group"></i></span>
                                         <div class="info-box-content">
-                                            <span class="info-box-text">Level <?= $i ?></span>
-                                            <span class="info-box-number"><?= isset($levelCounts[$i]) ? $levelCounts[$i] : 0 ?></span>
+                                            <span class="info-box-text">Level <?= $levelPlan->level ?></span>
+                                            <span class="info-box-number"><?= isset($levelCounts[$levelPlan->level]) ? $levelCounts[$levelPlan->level] : 0 ?></span>
                                         </div>
                                     </div>
                                 </div>
-                            <?php endfor; ?>
+                            <?php endforeach; ?>
                         </div>
                     </div>
 
@@ -280,6 +279,7 @@ $levelCounts = calculateLevelCounts($levelTeam);
     margin-bottom: 20px;
 }
 
+/* Dynamic level colors */
 .level-section[data-level="1"] { border-left-color: #007bff; }
 .level-section[data-level="2"] { border-left-color: #28a745; }
 .level-section[data-level="3"] { border-left-color: #ffc107; }
@@ -290,6 +290,11 @@ $levelCounts = calculateLevelCounts($levelTeam);
 .level-section[data-level="8"] { border-left-color: #e83e8c; }
 .level-section[data-level="9"] { border-left-color: #6c757d; }
 .level-section[data-level="10"] { border-left-color: #343a40; }
+.level-section[data-level="11"] { border-left-color: #17a2b8; }
+.level-section[data-level="12"] { border-left-color: #6610f2; }
+.level-section[data-level="13"] { border-left-color: #e83e8c; }
+.level-section[data-level="14"] { border-left-color: #fd7e14; }
+.level-section[data-level="15"] { border-left-color: #20c997; }
 
 .level-header {
     background: #f8f9fa;
