@@ -11,6 +11,8 @@ use Yii;
 use app\models\Customer;
 use app\models\Package;
 use app\models\CustomerPackage;
+use app\models\Ticket;
+use app\models\TicketChat;
 use yii\helpers\Url;
 
 /**
@@ -517,6 +519,235 @@ class CustomerDashboardController extends Controller
              ];
          }
      }
+
+    /**
+     * Displays customer tickets/complaints
+     */
+    public function actionTickets()
+    {
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            throw new NotFoundHttpException('Customer not found.');
+        }
+
+        // Apply filters
+        $statusFilter = Yii::$app->request->get('status', '');
+        $priorityFilter = Yii::$app->request->get('priority', '');
+
+        // Build query for customer tickets
+        $query = Ticket::getCustomerTickets($customer->id);
+
+        // Apply status filter
+        if (!empty($statusFilter)) {
+            $query->andWhere(['status' => $statusFilter]);
+        }
+
+        // Apply priority filter
+        if (!empty($priorityFilter)) {
+            $query->andWhere(['priority' => $priorityFilter]);
+        }
+
+        $tickets = $query->all();
+        
+        // Get ticket statistics
+        $stats = Ticket::getCustomerTicketStats($customer->id);
+
+        return $this->render('tickets', [
+            'customer' => $customer,
+            'tickets' => $tickets,
+            'stats' => $stats,
+            'statusFilter' => $statusFilter,
+            'priorityFilter' => $priorityFilter,
+        ]);
+    }
+
+    /**
+     * Create a new ticket/complaint
+     */
+    public function actionCreateTicket()
+    {
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            throw new NotFoundHttpException('Customer not found.');
+        }
+
+        $model = new Ticket();
+
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $model->customer_id = $customer->id;
+            
+            if ($model->validate()) {
+                // Create ticket using the model
+                if ($model->save()) {
+                    // Log activity
+                    $customer->logActivity('support_ticket', "Support ticket created: {$model->subject}", [
+                        'ticket_id' => $model->id,
+                        'subject' => $model->subject,
+                        'priority' => $model->priority
+                    ]);
+
+                    Yii::$app->session->setFlash('success', 'Ticket created successfully. We will respond to you soon.');
+                    return $this->redirect(['tickets']);
+                } else {
+                    Yii::$app->session->setFlash('error', 'Failed to create ticket: ' . implode(', ', $model->getFirstErrors()));
+                }
+            } else {
+                Yii::$app->session->setFlash('error', 'Please fill in all required fields correctly.');
+            }
+        }
+
+        return $this->render('create-ticket', [
+            'customer' => $customer,
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * View a specific ticket
+     */
+    public function actionViewTicket($id)
+    {
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            throw new NotFoundHttpException('Customer not found.');
+        }
+
+        $ticket = Ticket::find()
+            ->where(['id' => $id, 'customer_id' => $customer->id])
+            ->one();
+
+        if (!$ticket) {
+            throw new NotFoundHttpException('Ticket not found.');
+        }
+
+        // Get chat messages for this ticket
+        $chatMessages = TicketChat::getTicketChats($ticket->id)->all();
+        
+        // Mark admin messages as read
+        TicketChat::markAsRead($ticket->id, TicketChat::SENDER_ADMIN);
+
+        return $this->render('view-ticket', [
+            'customer' => $customer,
+            'ticket' => $ticket,
+            'chatMessages' => $chatMessages,
+        ]);
+    }
+
+    /**
+     * Send a chat message to a ticket
+     */
+    public function actionSendMessage()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!Yii::$app->request->isPost) {
+            return ['success' => false, 'message' => 'Invalid request method.'];
+        }
+
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            return ['success' => false, 'message' => 'Customer not found.'];
+        }
+
+        $ticketId = Yii::$app->request->post('ticket_id');
+        $message = Yii::$app->request->post('message');
+
+        if (empty($ticketId) || empty($message)) {
+            return ['success' => false, 'message' => 'Please provide ticket ID and message.'];
+        }
+
+        $ticket = Ticket::find()
+            ->where(['id' => $ticketId, 'customer_id' => $customer->id])
+            ->one();
+
+        if (!$ticket) {
+            return ['success' => false, 'message' => 'Ticket not found.'];
+        }
+
+        // Check if customer can communicate
+        if (!$ticket->canCustomerCommunicate()) {
+            return ['success' => false, 'message' => 'This ticket is closed. You cannot send messages.'];
+        }
+
+        // Add message to chat
+        $result = TicketChat::addMessage($ticket->id, TicketChat::SENDER_CUSTOMER, $customer->id, $message);
+
+        if ($result['success']) {
+            return [
+                'success' => true,
+                'message' => 'Message sent successfully.',
+                'chat' => [
+                    'id' => $result['chat']->id,
+                    'message' => $result['chat']->message,
+                    'sender_name' => $result['chat']->getSenderName(),
+                    'formatted_time' => $result['chat']->getFormattedTime(),
+                    'sender_type' => $result['chat']->sender_type
+                ]
+            ];
+        }
+
+        return ['success' => false, 'message' => $result['message']];
+    }
+
+    /**
+     * Get chat messages for a ticket (AJAX)
+     */
+    public function actionGetChatMessages($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            return ['success' => false, 'message' => 'Customer not found.'];
+        }
+
+        $ticket = Ticket::find()
+            ->where(['id' => $id, 'customer_id' => $customer->id])
+            ->one();
+
+        if (!$ticket) {
+            return ['success' => false, 'message' => 'Ticket not found.'];
+        }
+
+        $chatMessages = TicketChat::getTicketChats($ticket->id)->all();
+        
+        // Mark admin messages as read
+        TicketChat::markAsRead($ticket->id, TicketChat::SENDER_ADMIN);
+
+        $messages = [];
+        foreach ($chatMessages as $chat) {
+            $messages[] = [
+                'id' => $chat->id,
+                'message' => $chat->message,
+                'sender_name' => $chat->getSenderName(),
+                'sender_type' => $chat->sender_type,
+                'formatted_time' => $chat->getFormattedTime(),
+                'is_read' => $chat->is_read
+            ];
+        }
+
+        return [
+            'success' => true,
+            'messages' => $messages,
+            'can_communicate' => $ticket->canCustomerCommunicate()
+        ];
+    }
 
 
     

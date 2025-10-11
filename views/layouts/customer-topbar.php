@@ -34,8 +34,8 @@ $customer = Customer::find()
             <!-- Notification -->
             <li class="nav-item">
                 <div class="dropdown drp-user">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <span class="badge badge-warning"><i class="feather icon-bell"></i> New Updates</span>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="display: flex; align-items: center;">
+                        <span class="badge badge-warning" style="display: flex; align-items: center;"><i class="feather icon-bell"></i> New Updates</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-notification">
                         <div class="pro-head">

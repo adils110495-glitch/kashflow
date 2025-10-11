@@ -74,6 +74,16 @@ use yii\helpers\Html;
 							<li><a href="<?= \yii\helpers\Url::to(['/admin/pending-withdrawals']) ?>">Pending Requests</a></li>
 						</ul>
 					</li>
+					<li class="nav-item pcoded-menu-caption">
+						<label>Complain & Support</label>
+					</li>
+					<li class="nav-item pcoded-hasmenu <?= Yii::$app->controller->id === 'admin-ticket' && in_array(Yii::$app->controller->action->id, ['index', 'view']) ? 'pcoded-trigger' : '' ?>">
+						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-ticket"></i></span><span class="pcoded-mtext">Tickets</span></a>
+						<ul class="pcoded-submenu">
+							<li><a href="<?= \yii\helpers\Url::to(['/admin-ticket/index']) ?>">All Tickets</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/admin-ticket/index', 'status' => '1']) ?>">Pending Tickets</a></li>
+						</ul>
+					</li>
 					<li class="nav-item">
 					    <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline']) . Html::submitButton('<span class="pcoded-micon"><i class="feather icon-log-out"></i></span><span class="pcoded-mtext">Logout</span>', ['class' => 'btn btn-link logout nav-link']) . Html::endForm() ?>
 					</li>

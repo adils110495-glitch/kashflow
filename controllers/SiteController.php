@@ -71,6 +71,9 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        // Use a minimal layout for the login page
+        $this->layout = '@app/views/layouts/main-login';
+
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }

@@ -16,21 +16,6 @@ $customer = Customer::find()
     <div class="navbar-wrapper">
         <div class="navbar-content scroll-div">
             <ul class="nav pcoded-inner-navbar">
-                <?php if ($customer): ?>
-                <li class="nav-item">
-                    <div class="customer-profile-section" style="padding: 15px; margin-bottom: 10px; background: #f8f9fa; border-radius: 5px;">
-                        <div class="text-center">
-                            <div class="avatar-circle" style="width: 50px; height: 50px; background: #007bff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">
-                                <?= strtoupper(substr($customer->name, 0, 1)) ?>
-                            </div>
-                            <h6 class="mt-2 mb-1"><?= Html::encode($customer->name) ?></h6>
-                            <small class="text-muted">
-                                <?= $customer->currentPackage ? Html::encode($customer->currentPackage->name) . ' Plan' : 'No Package' ?>
-                            </small>
-                        </div>
-                    </div>
-                </li>
-                <?php endif; ?>
                 
                 <!-- Navigation Menu -->
                 <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'index' ? 'active' : '' ?>">
@@ -113,6 +98,36 @@ $customer = Customer::find()
                         <span class="pcoded-micon"><i class="feather icon-help-circle"></i></span>
                         <span class="pcoded-mtext">Support</span>
                     </a>
+                </li>
+                
+                <!-- Support Section -->
+                <li class="nav-item pcoded-menu-caption">
+                    <label>Support & Complaints</label>
+                </li>
+                
+                <!-- Ticket Section -->
+                <li class="nav-item pcoded-hasmenu <?= Yii::$app->controller->id === 'customer-dashboard' && in_array(Yii::$app->controller->action->id, ['tickets', 'create-ticket', 'view-ticket']) ? 'pcoded-trigger' : '' ?>">
+                    <a href="#" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-ticket"></i></span>
+                        <span class="pcoded-mtext">Ticket</span>
+                    </a>
+                    <ul class="pcoded-submenu">
+                        <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'tickets' && empty(Yii::$app->request->get('status')) ? 'active' : '' ?>">
+                            <a href="<?= Url::to(['/customer-dashboard/tickets']) ?>" class="nav-link">
+                                <span class="pcoded-mtext">All Tickets</span>
+                            </a>
+                        </li>
+                        <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'tickets' && Yii::$app->request->get('status') == '1' ? 'active' : '' ?>">
+                            <a href="<?= Url::to(['/customer-dashboard/tickets', 'status' => '1']) ?>" class="nav-link">
+                                <span class="pcoded-mtext">Pending Tickets</span>
+                            </a>
+                        </li>
+                        <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'create-ticket' ? 'active' : '' ?>">
+                            <a href="<?= Url::to(['/customer-dashboard/create-ticket']) ?>" class="nav-link">
+                                <span class="pcoded-mtext">Create Ticket</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 
                 <li class="nav-item">
