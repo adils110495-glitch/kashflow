@@ -56,7 +56,202 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-        
+
+        <!-- table card-1 start -->
+        <div class="col-md-12 col-xl-4">
+            <div class="card flat-card">
+                <div class="row-table">
+                    <div class="col-sm-6 card-body br">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-eye text-c-green mb-1 d-block"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>10k</h5>
+                                <span>Visitors</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 card-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-music text-c-red mb-1 d-block"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>100%</h5>
+                                <span>Volume</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-table">
+                    <div class="col-sm-6 card-body br">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-file-text text-c-blue mb-1 d-block"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>2000 +</h5>
+                                <span>Files</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 card-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-mail text-c-yellow mb-1 d-block"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>120</h5>
+                                <span>Mails</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- widget primary card start -->
+            <div class="card flat-card widget-primary-card">
+                <div class="row-table">
+                    <div class="col-sm-3 card-body">
+                        <i class="feather icon-star-on"></i>
+                    </div>
+                    <div class="col-sm-9">
+                        <h4>4000 +</h4>
+                        <h6>Ratings Received</h6>
+                    </div>
+                </div>
+            </div>
+            <!-- widget primary card end -->
+        </div>
+        <!-- table card-1 end -->
+        <!-- table card-2 start -->
+        <div class="col-md-12 col-xl-4">
+            <div class="card flat-card">
+                <div class="row-table">
+                    <div class="col-sm-6 card-body br">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-share-2 text-c-blue mb-1 d-block"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>1000</h5>
+                                <span>Shares</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 card-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-wifi text-c-blue mb-1 d-block"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>600</h5>
+                                <span>Network</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-table">
+                    <div class="col-sm-6 card-body br">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-rotate-ccw text-c-blue mb-1 d-block"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>3550</h5>
+                                <span>Returns</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 card-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="icon feather icon-shopping-cart text-c-blue mb-1 d-blockz"></i>
+                            </div>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>100%</h5>
+                                <span>Order</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- widget-success-card start -->
+            <div class="card flat-card widget-purple-card">
+                <div class="row-table">
+                    <div class="col-sm-3 card-body">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="col-sm-9">
+                        <h4>17</h4>
+                        <h6>Achievements</h6>
+                    </div>
+                </div>
+            </div>
+            <!-- widget-success-card end -->
+        </div>
+        <!-- table card-2 end -->
+
+        <!-- Information Sliders Card -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Important Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-slider-container">
+                        <div class="info-slider" id="infoSlider">
+                            <!-- Slider 1 -->
+                            <div class="slider-item active">
+                                <div class="slider-content">
+                                    <div class="slider-icon">
+                                        <i class="fas fa-chart-line text-success"></i>
+                                    </div>
+                                    <div class="slider-text">
+                                        <h6>Double Income Opportunity</h6>
+                                        <p>You may get double Income on your capital in a single day</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slider 2 -->
+                            <div class="slider-item">
+                                <div class="slider-content">
+                                    <div class="slider-icon">
+                                        <i class="fas fa-money-bill-wave text-primary"></i>
+                                    </div>
+                                    <div class="slider-text">
+                                        <h6>Flexible Withdrawals</h6>
+                                        <p>Withdrawal made cash, online, Dollars/ Crypto.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slider 3 -->
+                            <div class="slider-item">
+                                <div class="slider-content">
+                                    <div class="slider-icon">
+                                        <i class="fas fa-sync-alt text-warning"></i>
+                                    </div>
+                                    <div class="slider-text">
+                                        <h6>Top-up Requirements</h6>
+                                        <p>Top up is necessary after getting 2X. No need in 4 Years Plan of completing 10 Direct.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slider Navigation Dots -->
+                        <div class="slider-dots">
+                            <span class="dot active" data-slide="0"></span>
+                            <span class="dot" data-slide="1"></span>
+                            <span class="dot" data-slide="2"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Customer Info Card -->
         <div class="col-md-4">
             <div class="card">
@@ -69,7 +264,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <p><strong>Email:</strong> <?= Html::encode($customer->email) ?></p>
                     <p><strong>Mobile:</strong> <?= Html::encode($customer->mobile_no) ?></p>
                     <p><strong>Country:</strong> <?= Html::encode($customer->country->name ?? 'N/A') ?></p>
-                    <p><strong>Status:</strong> 
+                    <p><strong>Status:</strong>
                         <span class="badge <?= $customer->status == 1 ? 'badge-success' : 'badge-danger' ?>">
                             <?= $customer->getStatusText() ?>
                         </span>
@@ -92,7 +287,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h4 class="text-primary"><?= Html::encode($customer->currentPackage->name) ?></h4>
                         <p><strong>Amount:</strong> $<?= number_format($customer->currentPackage->amount, 2) ?></p>
                         <p><strong>Fee:</strong> $<?= number_format($customer->currentPackage->fee, 2) ?></p>
-                        <p><strong>Status:</strong> 
+                        <p><strong>Status:</strong>
                             <span class="badge <?= $customer->currentPackage->status == 1 ? 'badge-success' : 'badge-warning' ?>">
                                 <?= $customer->currentPackage->getStatusText() ?>
                             </span>
@@ -107,26 +302,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
 
-        <!-- Quick Actions Card -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <?= Html::a('<i class="fas fa-user"></i> View Profile', ['profile'], ['class' => 'btn btn-outline-primary btn-sm mb-2']) ?>
-                        <?= Html::a('<i class="fas fa-box"></i> Browse Packages', ['/package/index'], ['class' => 'btn btn-outline-success btn-sm mb-2']) ?>
-                        <?= Html::a('<i class="fas fa-chart-line"></i> ROI Plans', ['/roi-plan/index'], ['class' => 'btn btn-outline-info btn-sm mb-2']) ?>
-                        <?= Html::a('<i class="fas fa-sign-out-alt"></i> Logout', ['/site/logout'], ['class' => 'btn btn-outline-secondary btn-sm', 'data-method' => 'post', 'data-confirm' => 'Are you sure you want to logout?']) ?>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
     </div>
 
     <div class="row mt-4">
-        
+
         <!-- Recent Activity Section -->
         <div class="col-md-12 mt-4">
             <div class="card">
@@ -152,8 +332,61 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 
-<style>
 
-</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.getElementById('infoSlider');
+        const dots = document.querySelectorAll('.dot');
+        const slides = document.querySelectorAll('.slider-item');
+
+        let currentSlide = 0;
+        let slideInterval;
+
+        // Function to show specific slide
+        function showSlide(index) {
+            // Remove active class from all slides and dots
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            // Add active class to current slide and dot
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+
+            currentSlide = index;
+        }
+
+        // Function to go to next slide
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        // Function to start auto-slide
+        function startAutoSlide() {
+            slideInterval = setInterval(nextSlide, 4000); // Change slide every 4 seconds
+        }
+
+        // Function to stop auto-slide
+        function stopAutoSlide() {
+            clearInterval(slideInterval);
+        }
+
+        // Add click event listeners to dots
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', function() {
+                showSlide(index);
+                stopAutoSlide();
+                startAutoSlide(); // Restart auto-slide after manual navigation
+            });
+        });
+
+        // Pause auto-slide on hover
+        slider.addEventListener('mouseenter', stopAutoSlide);
+        slider.addEventListener('mouseleave', startAutoSlide);
+
+        // Start auto-slide
+        startAutoSlide();
+    });
+</script>
 
 <?= $this->render('_upgrade_modal') ?>
