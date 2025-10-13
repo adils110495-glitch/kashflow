@@ -1,0 +1,28 @@
+<svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="cloudGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+<stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#20c997;stop-opacity:1" />
+</linearGradient>
+</defs>
+<!-- Cloud Body -->
+<path d="M150 50C135 35 110 30 90 45C80 30 60 30 45 45C30 30 10 30 0 45V250C0 265 15 280 30 280H270C285 280 300 265 300 250V45C290 30 275 15 260 15C245 15 230 30 215 45C200 30 180 30 165 45C150 30 135 30 120 45C105 30 85 30 70 45C55 30 35 30 20 45V250C20 265 35 280 50 280H250C265 280 280 265 280 250V45C280 30 265 15 250 15C235 15 220 30 205 45C190 30 170 30 155 45Z" fill="url(#cloudGradient)"/>
+<!-- Eye -->
+<circle cx="120" cy="120" r="15" fill="white"/>
+<circle cx="120" cy="120" r="8" fill="#000"/>
+<!-- Smile -->
+<path d="M120 160Q120 160 130 165 140 170 150 165" stroke="#000" stroke-width="3" stroke-linecap="round" fill="none"/>
+<!-- Arms -->
+<path d="M80 130Q100 140 120 135" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+<path d="M220 130Q190 140 170 135" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+<!-- Legs -->
+<path d="M120 240Q120 240 120 260 120 280 120 280" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+<path d="M160 240Q160 240 160 260 160 280 160 280" stroke="#000" stroke-width="4" stroke-linecap="round" fill="none"/>
+<!-- Laptop -->
+<rect x="120" y="140" width="40" height="25" rx="4" fill="#007bff"/>
+<rect x="125" y="145" width="30" height="15" rx="2" fill="#fff"/>
+<path d="M125 150Q125 150 130 150 135 150 140 150" stroke="#000" stroke-width="1" stroke-linecap="round" fill="none"/>
+<!-- Ground -->
+<path d="M0 280H300" stroke="#000" stroke-width="6" stroke-linecap="round" fill="none"/>
+</svg>

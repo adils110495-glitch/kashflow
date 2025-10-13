@@ -68,15 +68,6 @@ class AdminController extends BaseSecurityController
     {
         $this->layout = '@app/views/layouts/main-login';
         
-        // Handle AJAX validation first to prevent null appending
-        if (\Yii::$app->request->isAjax) {
-            $model = \Yii::createObject(LoginForm::class);
-            if ($model->load(\Yii::$app->request->post())) {
-                \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-                return \yii\widgets\ActiveForm::validate($model);
-            }
-        }
-        
         // Check if user is already logged in
         if (!\Yii::$app->user->isGuest) {
             return $this->redirectAfterLogin();

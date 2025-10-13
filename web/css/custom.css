@@ -530,3 +530,551 @@ html {
 .btn-secondary{
     color: white;
 }
+
+/* Airspace Login Design Styles */
+.kashflow-login-wrapper {
+    height: 100vh;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.kashflow-login-container {
+    height: 100vh;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.kashflow-login-container .row {
+    height: 100vh;
+    margin: 0;
+}
+
+/* Left Section Styles */
+.kashflow-left-section {
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px;
+    min-height: 100vh;
+}
+
+.kashflow-form-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.kashflow-header {
+    margin-bottom: 20px;
+}
+
+.kashflow-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.cloud-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    position: relative;
+}
+
+.cloud-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+}
+
+.kashflow-text {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Form Styles */
+.kashflow-form {
+    width: 100%;
+}
+
+.kashflow-field-group {
+    margin-bottom: 20px;
+}
+
+.kashflow-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.kashflow-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.kashflow-input-group:focus-within {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.kashflow-input-group.has-error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.kashflow-input-group.has-success {
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.kashflow-input-icon {
+    position: absolute;
+    left: 16px;
+    color: #6c757d;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.kashflow-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 18px 16px 0 48px;
+    font-size: 16px;
+    color: #1a1a1a;
+    background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.kashflow-input::placeholder {
+    color: #6c757d;
+}
+
+.kashflow-password-toggle {
+    position: absolute;
+    right: 16px;
+    color: #6c757d;
+    cursor: pointer;
+    z-index: 2;
+    transition: color 0.3s ease;
+}
+
+.kashflow-password-toggle:hover {
+    color: #007bff;
+}
+
+/* Checkbox Styles */
+.kashflow-checkbox-group {
+    margin-bottom: 20px;
+}
+
+.kashflow-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.kashflow-checkbox-input {
+    width: 18px;
+    height: 18px;
+    margin-right: 12px;
+    accent-color: #007bff;
+}
+
+.kashflow-checkbox-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.kashflow-checkbox-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-left: 30px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Sign In Button */
+.kashflow-signin-btn {
+    width: 100%;
+    height: 45px;
+    background: #007bff;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.kashflow-signin-btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.kashflow-signin-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* AJAX Loading State */
+.kashflow-signin-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.kashflow-signin-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Dektrium Validation Error Styles */
+.kashflow-field-error {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+    line-height: 1.4;
+    min-height: 16px;
+}
+
+/* Ensure error messages are visible */
+.kashflow-field-group .kashflow-field-error {
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.3s ease;
+}
+
+.kashflow-field-group.has-error .kashflow-input-group {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.kashflow-field-group.has-error .kashflow-input-icon {
+    color: #dc3545;
+}
+
+.kashflow-field-group.has-success .kashflow-input-group {
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.kashflow-field-group.has-success .kashflow-input-icon {
+    color: #28a745;
+}
+
+/* Separator */
+.kashflow-separator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.kashflow-separator-line {
+    flex: 1;
+    height: 1px;
+    background: #e9ecef;
+}
+
+.kashflow-separator-text {
+    padding: 0 16px;
+    font-size: 14px;
+    color: #6c757d;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Sign Up Link */
+.kashflow-signup-link {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.kashflow-signup-text {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.kashflow-signup-text:hover {
+    text-decoration: underline;
+}
+
+/* Social Login Buttons */
+.kashflow-social-login {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.kashflow-social-btn {
+    width: 100%;
+    height: 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.kashflow-google-btn {
+    color: #1a1a1a;
+}
+
+.kashflow-google-btn:hover {
+    border-color: #4285f4;
+    background: #f8f9fa;
+}
+
+.kashflow-facebook-btn {
+    background: #1877f2;
+    border-color: #1877f2;
+    color: white;
+}
+
+.kashflow-facebook-btn:hover {
+    background: #166fe5;
+    border-color: #166fe5;
+}
+
+.kashflow-apple-btn {
+    background: #000000;
+    border-color: #000000;
+    color: white;
+}
+
+.kashflow-apple-btn:hover {
+    background: #333333;
+    border-color: #333333;
+}
+
+/* Copyright */
+.kashflow-copyright {
+    text-align: center;
+    font-size: 12px;
+    color: #6c757d;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin-bottom: 0;
+}
+
+/* Right Section Styles */
+.kashflow-right-section {
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.kashflow-promo-container {
+    width: 100%;
+    max-width: 500px;
+    text-align: left;
+    position: relative;
+    z-index: 2;
+    padding-left: 20px;
+}
+
+.kashflow-promo-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+    margin-bottom: 40px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    text-align: left;
+    max-width: 100%;
+}
+
+.kashflow-highlight {
+    color: #007bff;
+}
+
+.kashflow-cloud-character {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.kashflow-character-img {
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Background Elements */
+.kashflow-background-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.kashflow-document-outline {
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 80px;
+    height: 100px;
+    border: 2px dashed #e9ecef;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.kashflow-document-outline::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: #e9ecef;
+}
+
+.kashflow-document-outline::after {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: #e9ecef;
+}
+
+.kashflow-swirl-lines {
+    position: absolute;
+    top: 30%;
+    right: 15%;
+    width: 100px;
+    height: 100px;
+    opacity: 0.3;
+}
+
+.kashflow-swirl-lines::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M20,20 Q30,10 40,20 Q50,30 60,20 Q70,10 80,20' stroke='%23007bff' stroke-width='2' fill='none'/%3E%3Cpath d='M20,40 Q30,30 40,40 Q50,50 60,40 Q70,30 80,40' stroke='%23007bff' stroke-width='2' fill='none'/%3E%3Cpath d='M20,60 Q30,50 40,60 Q50,70 60,60 Q70,50 80,60' stroke='%23007bff' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .kashflow-left-section,
+    .kashflow-right-section {
+        padding: 40px 20px;
+    }
+    
+    .kashflow-promo-title {
+        font-size: 24px;
+    }
+    
+    .kashflow-character-img {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .kashflow-login-container .row {
+        flex-direction: column;
+    }
+    
+    .kashflow-left-section,
+    .kashflow-right-section {
+        min-height: 50vh;
+    }
+    
+    .kashflow-form-container {
+        max-width: 100%;
+    }
+}
+.form-group{
+    margin-bottom: 0px;
+}
+
+/* Chrome / Edge / Safari (WebKit) autofill overrides */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  /* Replace background with an inset box-shadow */
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+
+  /* Text color for the autofilled value */
+  -webkit-text-fill-color: var(--input-text) !important;
+
+  /* Prevent the yellow flash on some browsers */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* When autofilled and focused */
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  box-shadow: 0 0 0 1000px var(--input-bg) inset !important;
+  -webkit-text-fill-color: var(--input-text) !important;
+}
