@@ -158,20 +158,14 @@ $levelCounts = calculateLevelCounts($levelTeam);
                             <?= Html::label('Level', 'level', ['class' => 'form-label']) ?>
                             <?= Html::dropDownList('level', $level, \app\models\LevelPlan::getLevelOptions(), ['class' => 'form-select', 'prompt' => 'All Levels']) ?>
                         </div>
-                        
-                        <div class="col-md-2">
-                            <?= Html::label('Status', 'status', ['class' => 'form-label']) ?>
-                            <?= Html::dropDownList('status', $status, [
-                                '1' => 'Active',
-                                '0' => 'Inactive'
-                            ], ['class' => 'form-select', 'prompt' => 'All Status']) ?>
-                        </div>
-                        
-                        <div class="col-md-1">
-                            <?= Html::label('&nbsp;', '', ['class' => 'form-label d-block']) ?>
-                            <div class="d-flex flex-column gap-2">
-                                <?= Html::submitButton('Filter', ['class' => 'btn btn-primary btn-sm']) ?>
-                                <?= Html::a('Clear', Url::to(['level-team']), ['class' => 'btn btn-secondary btn-sm']) ?>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <?= Html::submitButton('<i class="feather icon-search"></i> Filter', ['class' => 'btn btn-primary']) ?>
+                                    <?= Html::a('<i class="feather icon-refresh-cw"></i> Reset', ['level-team'], ['class' => 'btn btn-secondary ml-2']) ?>
+                                </div>
                             </div>
                         </div>
                         

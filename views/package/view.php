@@ -12,8 +12,8 @@ use yii\bootstrap5\Tabs;
 * @var app\models\Package $model
 */
 
-$this->title = Yii::t('models', 'Package');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('models.plural', 'Package'), 'url' => ['index']];
+$this->title = 'Package';
+$this->params['breadcrumbs'][] = ['label' => 'Packages', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => (string)$model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'View';
 ?>
@@ -98,7 +98,7 @@ $this->params['breadcrumbs'][] = 'View';
                      'encodeLabels' => false,
                      'items' => [
  [
-    'label'   => '<b>' . \Yii::t('cruds', '# {primaryKey}', ['primaryKey' => Html::encode($model->id)]) . '</b>',
+    'label'   => '<b>#' . Html::encode($model->id) . '</b>',
     'content' => $this->blocks['app\models\Package'],
     'active'  => true,
 ],

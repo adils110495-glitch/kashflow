@@ -27,37 +27,43 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="card-body">
                     <!-- Filter Form -->
+
                     <div class="filter-section mb-4">
                         <?php $form = ActiveForm::begin([
                             'method' => 'get',
-                            'options' => ['class' => 'form-inline']
+                            'options' => ['class' => 'row g-3']
                         ]); ?>
                         
-                        <div class="form-group mr-3">
-                            <?= Html::label('Username', 'username', ['class' => 'mr-2']) ?>
+                        <div class="col-md-3">
+                            <?= Html::label('Username', 'username', ['class' => 'form-label']) ?>
                             <?= Html::textInput('username', $usernameFilter, [
                                 'class' => 'form-control',
                                 'placeholder' => 'Search by username'
                             ]) ?>
                         </div>
                         
-                        <div class="form-group mr-3">
-                            <?= Html::label('From Date', 'from_date', ['class' => 'mr-2']) ?>
+                        <div class="col-md-3">
+                            <?= Html::label('From Date', 'from_date', ['class' => 'form-label']) ?>
                             <?= Html::input('date', 'from_date', $fromDate, [
                                 'class' => 'form-control'
                             ]) ?>
                         </div>
                         
-                        <div class="form-group mr-3">
-                            <?= Html::label('To Date', 'to_date', ['class' => 'mr-2']) ?>
+                        <div class="col-md-3">
+                            <?= Html::label('To Date', 'to_date', ['class' => 'form-label']) ?>
                             <?= Html::input('date', 'to_date', $toDate, [
                                 'class' => 'form-control'
                             ]) ?>
                         </div>
                         
-                        <div class="form-group">
-                            <?= Html::submitButton('Filter', ['class' => 'btn btn-primary']) ?>
-                            <?= Html::a('Clear', Url::to(['direct-team']), ['class' => 'btn btn-secondary ml-2']) ?>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <?= Html::submitButton('<i class="feather icon-search"></i> Filter', ['class' => 'btn btn-primary']) ?>
+                                    <?= Html::a('<i class="feather icon-refresh-cw"></i> Reset', ['direct-team'], ['class' => 'btn btn-secondary ml-2']) ?>
+                                </div>
+                            </div>
                         </div>
                         
                         <?php ActiveForm::end(); ?>

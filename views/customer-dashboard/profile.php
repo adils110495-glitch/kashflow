@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
+use app\models\Customer;
 /* @var $this yii\web\View */
 /* @var $customer app\models\Customer */
 
@@ -159,7 +159,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php endif; ?>
                         <?= Html::a('<i class="fas fa-edit"></i> Update Profile', ['/user/settings/profile'], ['class' => 'btn btn-outline-info btn-sm mb-2']) ?>
                         <?= Html::a('<i class="fas fa-key"></i> Change Password', ['/user/settings/account'], ['class' => 'btn btn-outline-warning btn-sm mb-2']) ?>
-                        <?= Html::a('<i class="fas fa-envelope"></i> Contact Support', ['/site/contact'], ['class' => 'btn btn-outline-secondary btn-sm']) ?>
+                        <?= Html::a('<i class="fas fa-envelope"></i> Contact Support', ['/customer-dashboard/tickets'], ['class' => 'btn btn-outline-secondary btn-sm']) ?>
                     </div>
                 </div>
             </div>

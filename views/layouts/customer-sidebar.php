@@ -71,7 +71,7 @@ $customer = Customer::find()
                  <li class="nav-item">
                     <a href="#" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-credit-card"></i></span>
-                        <span class="pcoded-mtext">Billing</span>
+                        <span class="pcoded-mtext">Fund Transfer</span>
                     </a>
                 </li>
                 
