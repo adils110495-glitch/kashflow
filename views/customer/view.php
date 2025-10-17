@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Customer */
 
-$this->title = $model->first_name . ' ' . $model->last_name;
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Customers', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -44,33 +44,28 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->user ? $model->user->email : 'N/A';
                 }
             ],
-            'first_name',
-            'last_name',
-            'phone',
-            'address:ntext',
-            'city',
-            'state',
-            'country',
-            'zip_code',
+            'name',
+            'mobile_no',
             [
-                'attribute' => 'referrer.user.username',
-                'label' => 'Referrer',
+                'attribute' => 'country.name',
+                'label' => 'Country',
                 'value' => function($model) {
-                    return $model->referrer && $model->referrer->user ? $model->referrer->user->username : 'N/A';
+                    return $model->country ? $model->country->name : 'N/A';
                 }
             ],
+            'referral_code',
             [
-                'attribute' => 'package.name',
+                'attribute' => 'currentPackage.name',
                 'label' => 'Package',
                 'value' => function($model) {
-                    return $model->package ? $model->package->name : 'N/A';
+                    return $model->currentPackage ? $model->currentPackage->name : 'N/A';
                 }
             ],
             [
-                'attribute' => 'package.price',
-                'label' => 'Package Price',
+                'attribute' => 'currentPackage.amount',
+                'label' => 'Package Amount',
                 'value' => function($model) {
-                    return $model->package ? '$' . number_format($model->package->price, 2) : 'N/A';
+                    return $model->currentPackage ? '$' . number_format($model->currentPackage->amount, 2) : 'N/A';
                 }
             ],
             'created_at:datetime',
