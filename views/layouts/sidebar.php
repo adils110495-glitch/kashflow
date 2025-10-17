@@ -37,7 +37,7 @@ use yii\helpers\Html;
 						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-box"></i></span><span class="pcoded-mtext">Plan</span></a>
 						<ul class="pcoded-submenu">
 							<li><a href="<?= \yii\helpers\Url::to(['/package/index']) ?>">Package</a></li>
-							<li><a href="<?= \yii\helpers\Url::to(['/roi-plan/index']) ?>">ROI Plan</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/roi-plan/configure']) ?>">ROI Plan</a></li>
 							<li><a href="<?= \yii\helpers\Url::to(['/level-plan/index']) ?>">Level Plan</a></li>
 						</ul>
 					</li>

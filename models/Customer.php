@@ -529,6 +529,7 @@ class Customer extends BaseCustomer
         $totalIncome = 0;
         $roiIncome = 0;
         $levelIncome = 0;
+        $referralIncome = 0;
         $monthlyIncome = 0;
         $pendingIncome = 0;
         $activeIncome = 0;
@@ -543,6 +544,8 @@ class Customer extends BaseCustomer
                 $roiIncome += $income->amount;
             } elseif ($income->type == Income::TYPE_LEVEL_INCOME) {
                 $levelIncome += $income->amount;
+            } elseif ($income->type == Income::TYPE_REFERRAL_INCOME) {
+                $referralIncome += $income->amount;
             }
             
             // Calculate income by status
@@ -563,6 +566,7 @@ class Customer extends BaseCustomer
             'total_income' => $totalIncome,
             'roi_income' => $roiIncome,
             'level_income' => $levelIncome,
+            'referral_income' => $referralIncome,
             'monthly_income' => $monthlyIncome,
             'pending_income' => $pendingIncome,
             'active_income' => $activeIncome
@@ -594,6 +598,77 @@ class Customer extends BaseCustomer
     public function getTotalWithdrawals()
     {
         return Ledger::getCustomerTotalWithdrawals($this->id);
+    }
+
+    /**
+     * Get customer's current month income
+     * @return float
+     */
+    public function getCurrentMonthIncome()
+    {
+        $currentMonthStart = date('Y-m-01');
+        $currentMonthEnd = date('Y-m-t');
+        
+        return Income::find()
+            ->where(['customer_id' => $this->id])
+            ->andWhere(['>=', 'date', $currentMonthStart])
+            ->andWhere(['<=', 'date', $currentMonthEnd])
+            ->sum('amount') ?: 0;
+    }
+
+    /**
+     * Get customer's total withdrawal amount from withdrawal table
+     * @return float
+     */
+    public function getTotalWithdrawalAmount()
+    {
+        return \app\models\Withdrawal::find()
+            ->where(['customer_id' => $this->id])
+            ->andWhere(['in', 'status', [
+                \app\models\Withdrawal::STATUS_APPROVED,
+                \app\models\Withdrawal::STATUS_PROCESSING,
+                \app\models\Withdrawal::STATUS_COMPLETED
+            ]])
+            ->sum('amount') ?: 0;
+    }
+
+    /**
+     * Get count of direct referrals for a customer
+     * @param int $customerId
+     * @return int
+     */
+    public static function getDirectReferralsCount($customerId)
+    {
+        $customer = static::findOne($customerId);
+        if (!$customer || !$customer->user) {
+            return 0;
+        }
+
+        return static::find()
+            ->joinWith('user')
+            ->where(['customer.referral_code' => $customer->user->username])
+            ->count();
+    }
+
+    /**
+     * Get count of all members in level team for a customer
+     * @param int $customerId
+     * @return int
+     */
+    public static function getLevelTeamCount($customerId)
+    {
+        $customer = static::findOne($customerId);
+        if (!$customer || !$customer->user) {
+            return 0;
+        }
+
+        // Build level team structure
+        $levelTeam = static::buildLevelTeam($customer->user->username);
+        
+        // Get all customers from the level team structure
+        $allCustomers = static::getAllLevelCustomersFromTeam($levelTeam);
+        
+        return count($allCustomers);
     }
 
     /**

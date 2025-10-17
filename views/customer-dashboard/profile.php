@@ -134,7 +134,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php endif; ?>
                     
                     <div class="mt-3">
-                        <?= Html::button('<i class="fas fa-arrow-up"></i> Upgrade Package', ['class' => 'btn btn-success btn-sm btn-block upgrade-package-btn']) ?>
+                        <?php if (Customer::canCustomerUpgrade($customer->id, null)): ?>
+                            <?= Html::button('<i class="fas fa-arrow-up"></i> Upgrade Package', ['class' => 'btn btn-success btn-sm btn-block upgrade-package-btn']) ?>
+                        <?php else: ?>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <small>You have already upgraded your package.</small>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -147,7 +154,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-body">
                     <div class="d-grid gap-2">
                         <?= Html::a('<i class="fas fa-arrow-left"></i> Back to Dashboard', ['index'], ['class' => 'btn btn-outline-primary btn-sm mb-2']) ?>
-                        <?= Html::button('<i class="fas fa-arrow-up"></i> Upgrade Package', ['class' => 'btn btn-success btn-sm mb-2 upgrade-package-btn']) ?>
+                        <?php if (Customer::canCustomerUpgrade($customer->id, null)): ?>
+                            <?= Html::button('<i class="fas fa-arrow-up"></i> Upgrade Package', ['class' => 'btn btn-success btn-sm mb-2 upgrade-package-btn']) ?>
+                        <?php endif; ?>
                         <?= Html::a('<i class="fas fa-edit"></i> Update Profile', ['/user/settings/profile'], ['class' => 'btn btn-outline-info btn-sm mb-2']) ?>
                         <?= Html::a('<i class="fas fa-key"></i> Change Password', ['/user/settings/account'], ['class' => 'btn btn-outline-warning btn-sm mb-2']) ?>
                         <?= Html::a('<i class="fas fa-envelope"></i> Contact Support', ['/site/contact'], ['class' => 'btn btn-outline-secondary btn-sm']) ?>

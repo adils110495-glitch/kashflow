@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use app\models\Customer;
 
 /* @var $this yii\web\View */
 /* @var $customer app\models\Customer */
@@ -64,22 +65,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="col-sm-6 card-body br">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-eye text-c-green mb-1 d-block"></i>
+                                <i class="fas fa-dollar-sign text-success mb-1 d-block"></i>
                             </div>
-                            <div class="col-sm-8 text-md-center">
-                                <h5>10k</h5>
-                                <span>Visitors</span>
+                            <div class="col-sm-8 text-md-center p-0">
+                                <h5>$<?= number_format($financialData['currentMonthIncome'], 2) ?></h5>
+                                <span><b><?= date('M')?></b> Earnings</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 card-body">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-music text-c-red mb-1 d-block"></i>
+                                <i class="fas fa-chart-line text-primary mb-1 d-block"></i>
                             </div>
-                            <div class="col-sm-8 text-md-center">
-                                <h5>100%</h5>
-                                <span>Volume</span>
+                            <div class="col-sm-8 text-md-center p-0">
+                                <h5>$<?= number_format($financialData['totalIncome'], 2) ?></h5>
+                                <span>Earnings</span>
                             </div>
                         </div>
                     </div>
@@ -88,22 +89,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="col-sm-6 card-body br">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-file-text text-c-blue mb-1 d-block"></i>
+                                <i class="fas fa-credit-card text-danger mb-1 d-block"></i>
                             </div>
-                            <div class="col-sm-8 text-md-center">
-                                <h5>2000 +</h5>
-                                <span>Files</span>
+                            <div class="col-sm-8 text-md-center p-0">
+                                <h5>$<?= number_format($financialData['totalWithdrawal'], 2) ?></h5>
+                                <span>Earning Released</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 card-body">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-mail text-c-yellow mb-1 d-block"></i>
+                                <i class="fas fa-wallet text-warning mb-1 d-block"></i>
                             </div>
-                            <div class="col-sm-8 text-md-center">
-                                <h5>120</h5>
-                                <span>Mails</span>
+                            <div class="col-sm-8 text-md-center p-0">
+                                <h5>$<?= number_format($financialData['currentBalance'], 2) ?></h5>
+                                <span>Earning Balance</span>
                             </div>
                         </div>
                     </div>
@@ -131,22 +132,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="col-sm-6 card-body br">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-share-2 text-c-blue mb-1 d-block"></i>
+                                <i class="fas fa-briefcase text-info mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center">
-                                <h5>1000</h5>
-                                <span>Shares</span>
+                                <h5>$<?= number_format($additionalMetrics['investment'], 2) ?></h5>
+                                <span>Investment</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 card-body">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-wifi text-c-blue mb-1 d-block"></i>
+                                <i class="fas fa-users text-success mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center">
-                                <h5>600</h5>
-                                <span>Network</span>
+                                <h5><?= $additionalMetrics['referrals'] ?></h5>
+                                <span>Referrals</span>
                             </div>
                         </div>
                     </div>
@@ -155,22 +156,22 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="col-sm-6 card-body br">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-rotate-ccw text-c-blue mb-1 d-block"></i>
+                                <i class="fas fa-network-wired text-primary mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center">
-                                <h5>3550</h5>
-                                <span>Returns</span>
+                                <h5><?= $additionalMetrics['network'] ?></h5>
+                                <span>Network</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 card-body">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="icon feather icon-shopping-cart text-c-blue mb-1 d-blockz"></i>
+                                <i class="fas fa-chart-line text-warning mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center">
-                                <h5>100%</h5>
-                                <span>Order</span>
+                                <h5>$<?= number_format($additionalMetrics['profit'], 2) ?></h5>
+                                <span>Profit</span>
                             </div>
                         </div>
                     </div>
@@ -296,7 +297,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         <p class="text-muted">No package assigned</p>
                     <?php endif; ?>
                     <div class="mt-3">
-                        <?= Html::button('<i class="fas fa-arrow-up"></i> Upgrade Package', ['class' => 'btn btn-success btn-sm upgrade-package-btn']) ?>
+                        <?php if (Customer::canCustomerUpgrade($customer->id, null)): ?>
+                            <?= Html::button('<i class="fas fa-arrow-up"></i> Upgrade Package', ['class' => 'btn btn-success btn-sm upgrade-package-btn']) ?>
+                        <?php else: ?>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <small>You have already upgraded your package.</small>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

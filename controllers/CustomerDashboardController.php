@@ -71,9 +71,82 @@ class CustomerDashboardController extends Controller
             return $this->goHome();
         }
 
+        // Calculate financial data
+        $financialData = $this->calculateFinancialData($customer->id);
+        
+        // Calculate additional metrics (investment, referrals, network, profit)
+        $additionalMetrics = $this->calculateAdditionalMetrics($customer->id);
+
         return $this->render('index', [
             'customer' => $customer,
+            'financialData' => $financialData,
+            'additionalMetrics' => $additionalMetrics,
         ]);
+    }
+
+    /**
+     * Calculate financial data for customer dashboard
+     * @param int $customerId
+     * @return array
+     */
+    private function calculateFinancialData($customerId)
+    {
+        $customer = Customer::findOne($customerId);
+        
+        if (!$customer) {
+            return [
+                'currentMonthIncome' => 0,
+                'totalIncome' => 0,
+                'totalWithdrawal' => 0,
+                'currentBalance' => 0,
+            ];
+        }
+
+        return [
+            'currentMonthIncome' => $customer->getCurrentMonthIncome(),
+            'totalIncome' => $customer->getTotalIncome(),
+            'totalWithdrawal' => $customer->getTotalWithdrawalAmount(),
+            'currentBalance' => $customer->getLedgerBalance(),
+        ];
+    }
+
+    /**
+     * Calculate additional metrics for customer dashboard
+     * @param int $customerId
+     * @return array
+     */
+    private function calculateAdditionalMetrics($customerId)
+    {
+        $customer = Customer::findOne($customerId);
+        
+        if (!$customer) {
+            return [
+                'investment' => 0,
+                'referrals' => 0,
+                'network' => 0,
+                'profit' => 0,
+            ];
+        }
+
+        // Investment: Selected package amount
+        $investment = $customer->currentPackage ? $customer->currentPackage->amount : 0;
+
+        // Referrals: Number of total direct referrals
+        $referrals = Customer::getDirectReferralsCount($customerId);
+
+        // Network: Number of members in level team
+        $network = Customer::getLevelTeamCount($customerId);
+
+        // Profit: Income - Investment
+        $totalIncome = $customer->getTotalIncome();
+        $profit = $totalIncome - $investment;
+
+        return [
+            'investment' => $investment,
+            'referrals' => $referrals,
+            'network' => $network,
+            'profit' => $profit,
+        ];
     }
 
     /**
@@ -212,7 +285,6 @@ class CustomerDashboardController extends Controller
         $typeFilter = Yii::$app->request->get('type', '');
         $fromDate = Yii::$app->request->get('from_date', '');
         $toDate = Yii::$app->request->get('to_date', '');
-        $statusFilter = Yii::$app->request->get('status', '');
 
         // Build query for customer incomes
         $query = \app\models\Income::find()
@@ -222,11 +294,6 @@ class CustomerDashboardController extends Controller
         // Apply type filter
         if (!empty($typeFilter)) {
             $query->andWhere(['type' => $typeFilter]);
-        }
-
-        // Apply status filter
-        if (!empty($statusFilter)) {
-            $query->andWhere(['status' => $statusFilter]);
         }
 
         // Apply date filters
@@ -249,7 +316,6 @@ class CustomerDashboardController extends Controller
             'typeFilter' => $typeFilter,
             'fromDate' => $fromDate,
             'toDate' => $toDate,
-            'statusFilter' => $statusFilter,
         ]);
     }
 

@@ -12,6 +12,7 @@ use app\models\RoiPlan;
 use app\models\Income;
 use app\models\LevelPlan;
 use app\models\CustomerActivity;
+use app\models\Options;
 use yii\db\Expression;
 
 /**
@@ -316,6 +317,224 @@ class IncomeController extends Controller
     }
     
     /**
+     * Generate referral income for customers based on referral plan settings
+     * This action should be run based on the referral frequency setting
+     * 
+     * @return int Exit code
+     */
+    public function actionReferralIncome()
+    {
+        $this->stdout("Starting referral income generation...\n");
+        
+        // Get referral plan settings from options table
+        $referralNoOfReferral = Options::getValue('referral_no_of_referral', '');
+        $referralRate = Options::getValue('referral_rate', '');
+        $referralFrequency = Options::getValue('referral_frequency', '');
+        $referralTenure = Options::getValue('referral_tenure', '');
+        
+        // Validate referral plan settings
+        if (empty($referralNoOfReferral) || empty($referralRate) || empty($referralFrequency) || empty($referralTenure)) {
+            $this->stdout("Error: Referral plan settings are not configured. Please configure referral plan first.\n");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+        
+        $this->stdout("Referral Plan Settings:\n");
+        $this->stdout("- Required Referrals: {$referralNoOfReferral}\n");
+        $this->stdout("- Referral Rate: {$referralRate}%\n");
+        $this->stdout("- Frequency: " . $this->getFrequencyLabel($referralFrequency) . "\n");
+        $this->stdout("- Tenure: " . $this->getTenureLabel($referralTenure) . "\n\n");
+        
+        $transaction = Yii::$app->db->beginTransaction();
+        $generatedCount = 0;
+        $errorCount = 0;
+        
+        try {
+            // Get customers who have met the referral requirement
+            $eligibleCustomers = Customer::find()
+                ->alias('c')
+                ->joinWith(['user u'])
+                ->where(['c.status' => Customer::STATUS_ACTIVE])
+                ->all();
+            
+            $this->stdout("Found " . count($eligibleCustomers) . " active customers.\n");
+            
+            foreach ($eligibleCustomers as $customer) {
+                try {
+                    // Count direct referrals for this customer
+                    $directReferrals = Customer::find()
+                        ->joinWith(['user u'])
+                        ->where(['referral_code' => $customer->user->username])
+                        ->count();
+                    
+                    // Check if customer meets referral requirement
+                    if ($directReferrals < $referralNoOfReferral) {
+                        $this->stdout("Customer {$customer->name} has {$directReferrals}/{$referralNoOfReferral} referrals. Skipping.\n");
+                        continue;
+                    }
+                    
+                    // Get customer's active package
+                    $customerPackage = CustomerPackage::find()
+                        ->where(['customer_id' => $customer->id, 'status' => CustomerPackage::STATUS_ACTIVE])
+                        ->one();
+                    
+                    if (!$customerPackage || !$customerPackage->package) {
+                        $this->stdout("Customer {$customer->name} has no active package. Skipping.\n");
+                        continue;
+                    }
+                    
+                    $package = $customerPackage->package;
+                    
+                    // Calculate total tenure amount (package_amount * tenure)
+                    $tenureAmount = $package->amount * $referralTenure;
+                    
+                    // Check how much referral income has already been generated for this customer
+                    $totalGenerated = Income::find()
+                        ->where(['customer_id' => $customer->id, 'type' => Income::TYPE_REFERRAL_INCOME])
+                        ->sum('amount') ?: 0;
+                    
+                    // Check if tenure amount is already completed
+                    if ($totalGenerated >= $tenureAmount) {
+                        $this->stdout("Customer {$customer->name} has completed referral tenure amount. Skipping.\n");
+                        continue;
+                    }
+                    
+                    // Calculate referral income based on frequency
+                    $referralIncome = ($package->amount * $referralRate) / 100;
+                    
+                    // Adjust income based on frequency
+                    switch ($referralFrequency) {
+                        case RoiPlan::FREQUENCY_DAILY:
+                            $incomeAmount = $referralIncome;
+                            $checkPeriod = date('Y-m-d');
+                            break;
+                        case RoiPlan::FREQUENCY_WEEKLY:
+                            $incomeAmount = $referralIncome;
+                            $checkPeriod = date('Y-W'); // Year-Week
+                            break;
+                        case RoiPlan::FREQUENCY_MONTHLY:
+                            $incomeAmount = $referralIncome;
+                            $checkPeriod = date('Y-m');
+                            break;
+                        case RoiPlan::FREQUENCY_YEARLY:
+                            $incomeAmount = $referralIncome;
+                            $checkPeriod = date('Y');
+                            break;
+                        default:
+                            $incomeAmount = $referralIncome;
+                            $checkPeriod = date('Y-m');
+                    }
+                    
+                    // Ensure we don't exceed the tenure amount
+                    $remainingAmount = $tenureAmount - $totalGenerated;
+                    if ($incomeAmount > $remainingAmount) {
+                        $incomeAmount = $remainingAmount;
+                    }
+                    
+                    // Check if referral income for this period already exists
+                    $existingIncome = Income::find()
+                        ->where([
+                            'customer_id' => $customer->id,
+                            'type' => Income::TYPE_REFERRAL_INCOME,
+                        ])
+                        ->andWhere(['like', 'date', $checkPeriod])
+                        ->exists();
+                    
+                    if ($existingIncome) {
+                        $this->stdout("Referral income for {$customer->name} already generated for {$checkPeriod}. Skipping.\n");
+                        continue;
+                    }
+                    
+                    // Create new referral income record
+                    $income = new Income();
+                    $income->customer_id = $customer->id;
+                    $income->date = date('Y-m-d');
+                    $income->type = Income::TYPE_REFERRAL_INCOME;
+                    $income->level = 0; // Referral income is not level-based
+                    $income->amount = $incomeAmount;
+                    $income->status = Income::STATUS_PENDING;
+                    $income->meta = json_encode([
+                        'referral_count' => $directReferrals,
+                        'required_referrals' => $referralNoOfReferral,
+                        'referral_rate' => $referralRate,
+                        'frequency' => $referralFrequency,
+                        'tenure' => $referralTenure
+                    ]);
+                    
+                    if ($income->save()) {
+                        $generatedCount++;
+                        $this->stdout("Generated referral income for {$customer->name}: $" . number_format($incomeAmount, 2) . " (Referrals: {$directReferrals})\n");
+                        
+                        // Create notification for referral income generation
+                        $activity = new CustomerActivity();
+                        $activity->customer_id = $customer->id;
+                        $activity->activity_type = CustomerActivity::TYPE_INCOME_GENERATED;
+                        $activity->activity_description = "Referral income of $" . number_format($incomeAmount, 2) . " generated for {$directReferrals} referrals";
+                        $activity->metadata = [
+                            'amount' => $incomeAmount, 
+                            'income_type' => 'Referral',
+                            'referral_count' => $directReferrals,
+                            'required_referrals' => $referralNoOfReferral
+                        ];
+                        $activity->save();
+                    } else {
+                        $errorCount++;
+                        $this->stdout("Failed to save referral income for {$customer->name}: " . implode(', ', $income->getFirstErrors()) . "\n");
+                    }
+                    
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $this->stdout("Error processing customer {$customer->name} (ID: {$customer->id}): " . $e->getMessage() . "\n");
+                }
+            }
+            
+            $transaction->commit();
+            
+            $this->stdout("\nReferral income generation completed.\n");
+            $this->stdout("Generated: {$generatedCount} income records\n");
+            $this->stdout("Errors: {$errorCount}\n");
+            
+            return ExitCode::OK;
+            
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            $this->stdout("Error during referral income generation: " . $e->getMessage() . "\n");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+    }
+    
+    /**
+     * Get frequency label
+     * @param int $frequency
+     * @return string
+     */
+    private function getFrequencyLabel($frequency)
+    {
+        $labels = [
+            RoiPlan::FREQUENCY_DAILY => 'Daily',
+            RoiPlan::FREQUENCY_WEEKLY => 'Weekly',
+            RoiPlan::FREQUENCY_MONTHLY => 'Monthly',
+            RoiPlan::FREQUENCY_YEARLY => 'Yearly',
+        ];
+        
+        return isset($labels[$frequency]) ? $labels[$frequency] : 'Unknown';
+    }
+    
+    /**
+     * Get tenure label
+     * @param int $tenure
+     * @return string
+     */
+    private function getTenureLabel($tenure)
+    {
+        $labels = [
+            RoiPlan::TENURE_TWICE => 'Twice',
+            RoiPlan::TENURE_THRICE => 'Thrice',
+        ];
+        
+        return isset($labels[$tenure]) ? $labels[$tenure] : 'Unknown';
+    }
+    
+    /**
      * Display ROI generation statistics
      * 
      * @return int Exit code
@@ -355,6 +574,13 @@ class IncomeController extends Controller
         
         $this->stdout("Total Level income generated: $" . number_format($totalLevel, 2) . "\n");
         
+        // Total Referral income generated
+        $totalReferral = Income::find()
+            ->where(['type' => Income::TYPE_REFERRAL_INCOME])
+            ->sum('amount') ?: 0;
+        
+        $this->stdout("Total Referral income generated: $" . number_format($totalReferral, 2) . "\n");
+        
         // Level income this month
          $monthlyLevel = Income::find()
              ->where(['type' => Income::TYPE_LEVEL_INCOME])
@@ -362,6 +588,14 @@ class IncomeController extends Controller
              ->sum('amount') ?: 0;
         
         $this->stdout("Level income this month ({$currentMonth}): $" . number_format($monthlyLevel, 2) . "\n");
+        
+        // Referral income this month
+        $monthlyReferral = Income::find()
+            ->where(['type' => Income::TYPE_REFERRAL_INCOME])
+            ->andWhere(['like', 'date', $currentMonth])
+            ->sum('amount') ?: 0;
+        
+        $this->stdout("Referral income this month ({$currentMonth}): $" . number_format($monthlyReferral, 2) . "\n");
         
         // Active ROI plan
         $roiPlan = RoiPlan::find()
@@ -376,6 +610,22 @@ class IncomeController extends Controller
             $this->stdout("Release Date: {$roiPlan->release_date}\n");
         } else {
             $this->stdout("\nNo active ROI plan found.\n");
+        }
+        
+        // Referral plan settings
+        $referralNoOfReferral = Options::getValue('referral_no_of_referral', '');
+        $referralRate = Options::getValue('referral_rate', '');
+        $referralFrequency = Options::getValue('referral_frequency', '');
+        $referralTenure = Options::getValue('referral_tenure', '');
+        
+        if (!empty($referralNoOfReferral) && !empty($referralRate) && !empty($referralFrequency) && !empty($referralTenure)) {
+            $this->stdout("\nReferral Plan Settings:\n");
+            $this->stdout("Required Referrals: {$referralNoOfReferral}\n");
+            $this->stdout("Referral Rate: {$referralRate}%\n");
+            $this->stdout("Frequency: " . $this->getFrequencyLabel($referralFrequency) . "\n");
+            $this->stdout("Tenure: " . $this->getTenureLabel($referralTenure) . "\n");
+        } else {
+            $this->stdout("\nReferral plan not configured.\n");
         }
         
         return ExitCode::OK;

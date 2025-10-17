@@ -7,6 +7,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
 
 /**
  * RoiPlanController implements the CRUD actions for RoiPlan model.
@@ -124,6 +125,66 @@ class RoiPlanController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * ROI Plan Configuration Form with ROI and Referral tabs
+     * @return string|\yii\web\Response
+     */
+    public function actionConfigure()
+    {
+        // Load ROI data from options table
+        $roiData = [
+            'rate' => \app\models\Options::getValue('roi_rate', ''),
+            'frequency' => \app\models\Options::getValue('roi_frequency', ''),
+            'tenure' => \app\models\Options::getValue('roi_tenure', ''),
+            'status' => \app\models\Options::getValue('roi_status', ''),
+        ];
+
+        // Load referral data from options table
+        $referralData = [
+            'no_of_referral' => \app\models\Options::getValue('referral_no_of_referral', ''),
+            'rate' => \app\models\Options::getValue('referral_rate', ''),
+            'frequency' => \app\models\Options::getValue('referral_frequency', ''),
+            'tenure' => \app\models\Options::getValue('referral_tenure', ''),
+        ];
+
+        if (Yii::$app->request->isPost) {
+            $postData = Yii::$app->request->post();
+            
+            // Handle ROI Plan submission
+            if (isset($postData['roi'])) {
+                $roiData = $postData['roi'];
+                
+                // Save ROI data to options table
+                \app\models\Options::setValue('roi_rate', $roiData['rate']);
+                \app\models\Options::setValue('roi_frequency', $roiData['frequency']);
+                \app\models\Options::setValue('roi_tenure', $roiData['tenure']);
+                \app\models\Options::setValue('roi_status', $roiData['status']);
+                
+                Yii::$app->session->setFlash('success', 'ROI Plan saved successfully.');
+                return $this->redirect(['configure']);
+            }
+            
+            // Handle Referral Plan submission
+            if (isset($postData['referral'])) {
+                $referralData = $postData['referral'];
+                
+                // Save referral data to options table
+                \app\models\Options::setValue('referral_no_of_referral', $referralData['no_of_referral']);
+                \app\models\Options::setValue('referral_rate', $referralData['rate']);
+                \app\models\Options::setValue('referral_frequency', $referralData['frequency']);
+                \app\models\Options::setValue('referral_tenure', $referralData['tenure']);
+                
+                Yii::$app->session->setFlash('success', 'Referral Plan saved successfully.');
+                return $this->redirect(['configure']);
+            }
+        }
+
+        return $this->render('configure', [
+            'roiData' => $roiData,
+            'referralData' => $referralData,
+        ]);
     }
 
     /**

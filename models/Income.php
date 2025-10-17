@@ -26,6 +26,7 @@ class Income extends BaseIncome
     // Income type constants
     const TYPE_ROI = 1;
     const TYPE_LEVEL_INCOME = 2;
+    const TYPE_REFERRAL_INCOME = 3;
 
     // Status constants
     const STATUS_PENDING = 0;
@@ -40,8 +41,9 @@ class Income extends BaseIncome
     public static function getTypeLabels()
     {
         return [
-            self::TYPE_ROI => 'ROI',
-            self::TYPE_LEVEL_INCOME => 'Level Income',
+            self::TYPE_ROI => 'ROI Earnings',
+            self::TYPE_LEVEL_INCOME => 'Network Earnings',
+            self::TYPE_REFERRAL_INCOME => 'Referral Bonus',
         ];
     }
 
@@ -95,6 +97,15 @@ class Income extends BaseIncome
     public function isLevelIncome()
     {
         return $this->type === self::TYPE_LEVEL_INCOME;
+    }
+
+    /**
+     * Check if income is referral type
+     * @return bool
+     */
+    public function isReferralIncome()
+    {
+        return $this->type === self::TYPE_REFERRAL_INCOME;
     }
 
     /**

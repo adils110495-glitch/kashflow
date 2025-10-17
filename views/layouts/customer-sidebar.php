@@ -39,33 +39,21 @@ $customer = Customer::find()
                 <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'direct-team' ? 'active' : '' ?>">
                     <a href="<?= Url::to(['/customer-dashboard/direct-team']) ?>" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-users"></i></span>
-                        <span class="pcoded-mtext">Direct Team</span>
+                        <span class="pcoded-mtext">Referrals</span>
                     </a>
                 </li>
                 
                 <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'level-team' ? 'active' : '' ?>">
                     <a href="<?= Url::to(['/customer-dashboard/level-team']) ?>" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-layers"></i></span>
-                        <span class="pcoded-mtext">Level Team</span>
+                        <span class="pcoded-mtext">Network</span>
                     </a>
                 </li>
                 
                 <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'income' ? 'active' : '' ?>">
                     <a href="<?= Url::to(['/customer-dashboard/income']) ?>" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-credit-card"></i></span>
-                        <span class="pcoded-mtext">Income</span>
-                    </a>
-                </li>
-                
-                <!-- Payment Section -->
-                <li class="nav-item pcoded-menu-caption">
-                    <label>Payment</label>
-                </li>
-                
-                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'withdrawal' ? 'active' : '' ?>">
-                    <a href="<?= Url::to(['/customer-dashboard/withdrawal']) ?>" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-minus-circle"></i></span>
-                        <span class="pcoded-mtext">Withdrawal</span>
+                        <span class="pcoded-mtext">Earnings</span>
                     </a>
                 </li>
                 
@@ -93,10 +81,12 @@ $customer = Customer::find()
                         <span class="pcoded-mtext">Invoices</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-help-circle"></i></span>
-                        <span class="pcoded-mtext">Support</span>
+                
+                
+                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'withdrawal' ? 'active' : '' ?>">
+                    <a href="<?= Url::to(['/customer-dashboard/withdrawal']) ?>" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-minus-circle"></i></span>
+                        <span class="pcoded-mtext">Withdrawal</span>
                     </a>
                 </li>
                 
@@ -108,7 +98,7 @@ $customer = Customer::find()
                 <!-- Ticket Section -->
                 <li class="nav-item pcoded-hasmenu <?= Yii::$app->controller->id === 'customer-dashboard' && in_array(Yii::$app->controller->action->id, ['tickets', 'create-ticket', 'view-ticket']) ? 'pcoded-trigger' : '' ?>">
                     <a href="#" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-ticket"></i></span>
+                        <span class="pcoded-micon"><i class="feather icon-help-circle"></i></span>
                         <span class="pcoded-mtext">Ticket</span>
                     </a>
                     <ul class="pcoded-submenu">
