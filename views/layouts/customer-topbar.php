@@ -17,10 +17,7 @@ $customer = Customer::find()
     <div class="m-header">
         <a class="mobile-menu" id="mobile-collapse1" href="#!"><span></span></a>
         <a href="<?= Url::to(['/customer-dashboard/index']) ?>" class="b-brand">
-            <div class="b-bg">
-                <i class="feather icon-trending-up"></i>
-            </div>
-            <span class="b-title">KashFlow</span>
+            <span class="b-title"><?php echo $this->render('logo.php');?></span>
         </a>
     </div>
     <a class="mobile-menu" id="mobile-header" href="#!">

@@ -12,7 +12,7 @@ use yii\helpers\Url;
 /* @var $fromDate string */
 /* @var $toDate string */
 
-$this->title = 'Direct Team';
+$this->title = 'Referrals';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-users"></i> Direct Team Members
+                        <i class="fas fa-users"></i> Referrals
                     </h3>
                 </div>
                 <div class="card-body">
@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="info-box bg-info">
                                     <span class="info-box-icon"><i class="fas fa-users"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Total Direct Team</span>
+                                        <span class="info-box-text">Total Referrals Team</span>
                                         <span class="info-box-number"><?= count($directTeam) ?></span>
                                     </div>
                                 </div>
@@ -92,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="info-box bg-warning">
                                     <span class="info-box-icon"><i class="fas fa-gift"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Free Package (Unpaid)</span>
+                                        <span class="info-box-text">Open Package (Unpaid)</span>
                                         <span class="info-box-number"><?= $packageStats['free']['unpaid'] ?></span>
                                     </div>
                                 </div>
@@ -168,7 +168,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php else: ?>
                         <div class="alert alert-info text-center">
                             <i class="fas fa-info-circle"></i>
-                            No direct team members found.
+                            No Referral found.
                             <?php if ($usernameFilter || $fromDate || $toDate): ?>
                                 Try adjusting your filters.
                             <?php endif; ?>

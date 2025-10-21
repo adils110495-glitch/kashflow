@@ -6,7 +6,7 @@ use app\models\Customer;
 /* @var $this yii\web\View */
 /* @var $customer app\models\Customer */
 
-$this->title = 'Customer Profile';
+$this->title = 'Profile';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

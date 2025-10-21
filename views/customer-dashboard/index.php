@@ -7,7 +7,7 @@ use app\models\Customer;
 /* @var $this yii\web\View */
 /* @var $customer app\models\Customer */
 
-$this->title = 'Customer Dashboard';
+$this->title = 'Dashboard';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
@@ -15,72 +15,35 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
-                <h1>Welcome back, <?= Html::encode($customer->name) ?>!</h1>
+                <h1>Good to have you back, <?= Html::encode($customer->name) ?>!</h1>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <!-- Recent Activity or Statistics -->
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Account Overview</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-md-3">
-                            <div class="stat-item">
-                                <h3 class="text-primary"><?= Html::encode($customer->currentPackage->name ?? 'Free') ?></h3>
-                                <p class="text-muted">Current Plan</p>
+        <!-- table card-1 start -->
+        <div class="col-md-12 col-xl-6">
+            <div class="card flat-card">
+                <div class="row-table">
+                    <div class="col-sm-6 card-body br">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <i class="fas fa-briefcase text-info mb-1 d-block"></i>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stat-item">
-                                <h3 class="text-success"><?= $customer->status == 1 ? 'Active' : 'Inactive' ?></h3>
-                                <p class="text-muted">Account Status</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stat-item">
-                                <h3 class="text-info"><?= date('M Y', $customer->created_at) ?></h3>
-                                <p class="text-muted">Member Since</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="stat-item">
-                                <h3 class="text-warning"><?= Html::encode($customer->country->name ?? 'N/A') ?></h3>
-                                <p class="text-muted">Location</p>
+                            <div class="col-sm-8 text-md-center">
+                                <h5>₹<?= number_format($additionalMetrics['investment'], 2) ?></h5>
+                                <span>Investment</span>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- table card-1 start -->
-        <div class="col-md-12 col-xl-4">
-            <div class="card flat-card">
-                <div class="row-table">
                     <div class="col-sm-6 card-body br">
                         <div class="row">
                             <div class="col-sm-4">
                                 <i class="fas fa-dollar-sign text-success mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center p-0">
-                                <h5>$<?= number_format($financialData['currentMonthIncome'], 2) ?></h5>
+                                <h5>₹<?= number_format($financialData['currentMonthIncome'], 2) ?></h5>
                                 <span><b><?= date('M')?></b> Earnings</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 card-body">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <i class="fas fa-chart-line text-primary mb-1 d-block"></i>
-                            </div>
-                            <div class="col-sm-8 text-md-center p-0">
-                                <h5>$<?= number_format($financialData['totalIncome'], 2) ?></h5>
-                                <span>Earnings</span>
                             </div>
                         </div>
                     </div>
@@ -92,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-credit-card text-danger mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center p-0">
-                                <h5>$<?= number_format($financialData['totalWithdrawal'], 2) ?></h5>
+                                <h5>₹<?= number_format($financialData['totalWithdrawal'], 2) ?></h5>
                                 <span>Earning Released</span>
                             </div>
                         </div>
@@ -103,40 +66,42 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-wallet text-warning mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center p-0">
-                                <h5>$<?= number_format($financialData['currentBalance'], 2) ?></h5>
+                                <h5>₹<?= number_format($financialData['currentBalance'], 2) ?></h5>
                                 <span>Earning Balance</span>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
-            <!-- widget primary card start -->
-            <div class="card flat-card widget-primary-card">
+            <!-- widget-success-card start -->
+            <div class="card flat-card widget-purple-card">
                 <div class="row-table">
                     <div class="col-sm-3 card-body">
-                        <i class="feather icon-star-on"></i>
+                        <i class="fas fa-trophy"></i>
                     </div>
                     <div class="col-sm-9">
-                        <h4>4000 +</h4>
-                        <h6>Ratings Received</h6>
+                        <h4>17</h4>
+                        <h6>Achievements</h6>
                     </div>
                 </div>
             </div>
-            <!-- widget primary card end -->
+            <!-- widget-success-card end -->
         </div>
         <!-- table card-1 end -->
+
         <!-- table card-2 start -->
-        <div class="col-md-12 col-xl-4">
+        <div class="col-md-12 col-xl-6">
             <div class="card flat-card">
                 <div class="row-table">
                     <div class="col-sm-6 card-body br">
                         <div class="row">
                             <div class="col-sm-4">
-                                <i class="fas fa-briefcase text-info mb-1 d-block"></i>
+                                <i class="fas fa-chart-line text-primary mb-1 d-block"></i>
                             </div>
-                            <div class="col-sm-8 text-md-center">
-                                <h5>$<?= number_format($additionalMetrics['investment'], 2) ?></h5>
-                                <span>Investment</span>
+                            <div class="col-sm-8 text-md-center p-0">
+                                <h5>₹<?= number_format($financialData['totalIncome'], 2) ?></h5>
+                                <span>Total Earnings</span>
                             </div>
                         </div>
                     </div>
@@ -145,7 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div class="col-sm-4">
                                 <i class="fas fa-users text-success mb-1 d-block"></i>
                             </div>
-                            <div class="col-sm-8 text-md-center">
+                            <div class="col-sm-8 text-md-center p-0">
                                 <h5><?= $additionalMetrics['referrals'] ?></h5>
                                 <span>Referrals</span>
                             </div>
@@ -170,88 +135,31 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-chart-line text-warning mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center">
-                                <h5>$<?= number_format($additionalMetrics['profit'], 2) ?></h5>
-                                <span>Profit</span>
+                                <h5>₹<?= number_format($additionalMetrics['profit'], 2) ?></h5>
+                                <span>Total Profit</span>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
-            <!-- widget-success-card start -->
-            <div class="card flat-card widget-purple-card">
+            <!-- widget primary card start -->
+            <div class="card flat-card widget-primary-card">
                 <div class="row-table">
                     <div class="col-sm-3 card-body">
-                        <i class="fas fa-trophy"></i>
+                        <i class="feather icon-star-on"></i>
                     </div>
                     <div class="col-sm-9">
-                        <h4>17</h4>
-                        <h6>Achievements</h6>
+                        <h4>4000 +</h4>
+                        <h6>Ratings Received</h6>
                     </div>
                 </div>
             </div>
-            <!-- widget-success-card end -->
+            <!-- widget primary card end -->
         </div>
         <!-- table card-2 end -->
 
-        <!-- Information Sliders Card -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Important Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="info-slider-container">
-                        <div class="info-slider" id="infoSlider">
-                            <!-- Slider 1 -->
-                            <div class="slider-item active">
-                                <div class="slider-content">
-                                    <div class="slider-icon">
-                                        <i class="fas fa-chart-line text-success"></i>
-                                    </div>
-                                    <div class="slider-text">
-                                        <h6>Double Income Opportunity</h6>
-                                        <p>You may get double Income on your capital in a single day</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Slider 2 -->
-                            <div class="slider-item">
-                                <div class="slider-content">
-                                    <div class="slider-icon">
-                                        <i class="fas fa-money-bill-wave text-primary"></i>
-                                    </div>
-                                    <div class="slider-text">
-                                        <h6>Flexible Withdrawals</h6>
-                                        <p>Withdrawal made cash, online, Dollars/ Crypto.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Slider 3 -->
-                            <div class="slider-item">
-                                <div class="slider-content">
-                                    <div class="slider-icon">
-                                        <i class="fas fa-sync-alt text-warning"></i>
-                                    </div>
-                                    <div class="slider-text">
-                                        <h6>Top-up Requirements</h6>
-                                        <p>Top up is necessary after getting 2X. No need in 4 Years Plan of completing 10 Direct.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slider Navigation Dots -->
-                        <div class="slider-dots">
-                            <span class="dot active" data-slide="0"></span>
-                            <span class="dot" data-slide="1"></span>
-                            <span class="dot" data-slide="2"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <!-- Customer Info Card -->
         <div class="col-md-4">
@@ -286,8 +194,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-body">
                     <?php if ($customer->currentPackage): ?>
                         <h4 class="text-primary"><?= Html::encode($customer->currentPackage->name) ?></h4>
-                        <p><strong>Amount:</strong> $<?= number_format($customer->currentPackage->amount, 2) ?></p>
-                        <p><strong>Fee:</strong> $<?= number_format($customer->currentPackage->fee, 2) ?></p>
+                        <p><strong>Amount:</strong> ₹<?= number_format($customer->currentPackage->amount, 2) ?></p>
+                        <p><strong>Fee:</strong> ₹<?= number_format($customer->currentPackage->fee, 2) ?></p>
                         <p><strong>Status:</strong>
                             <span class="badge <?= $customer->currentPackage->status == 1 ? 'badge-success' : 'badge-warning' ?>">
                                 <?= $customer->currentPackage->getStatusText() ?>
@@ -309,11 +217,107 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
+        <!-- Information Sliders Card -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Important Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-slider-container">
+                        <div class="info-slider" id="infoSlider">
+                            <!-- Slider 1 -->
+                            <div class="slider-item active">
+                                <div class="slider-content">
+                                    <div class="slider-icon">
+                                        <i class="fas fa-chart-line text-success"></i>
+                                    </div>
+                                    <div class="slider-text">
+                                        <h6>Double Income Opportunity</h6>
+                                        <p>You may earn lot of earning on your capital in a single day.</p>
+                                    </div>
+                                </div>
+                            </div>
 
-        
+                            <!-- Slider 2 -->
+                            <div class="slider-item">
+                                <div class="slider-content">
+                                    <div class="slider-icon">
+                                        <i class="fas fa-money-bill-wave text-primary"></i>
+                                    </div>
+                                    <div class="slider-text">
+                                        <h6>Flexible Withdrawals</h6>
+                                        <p>Withdrawal mode cash, online, Dollars/ Crypto.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slider 3 -->
+                            <div class="slider-item">
+                                <div class="slider-content">
+                                    <div class="slider-icon">
+                                        <i class="fas fa-sync-alt text-warning"></i>
+                                    </div>
+                                    <div class="slider-text">
+                                        <h6>Re-Investment Required</h6>
+                                        <p>Re-Investment is mandatory after earnings 2X for non working users. Again start your earnings with 50% re-investment </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slider Navigation Dots -->
+                        <div class="slider-dots">
+                            <span class="dot active" data-slide="0"></span>
+                            <span class="dot" data-slide="1"></span>
+                            <span class="dot" data-slide="2"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    
+
     <div class="row mt-4">
+
+    <!-- Recent Activity or Statistics -->
+    <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Account Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-primary"><?= Html::encode($customer->currentPackage->name ?? 'Free') ?></h3>
+                                <p class="text-muted">Current Plan</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-success"><?= $customer->status == 1 ? 'Active' : 'Inactive' ?></h3>
+                                <p class="text-muted">Account Status</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-info"><?= date('M Y', $customer->created_at) ?></h3>
+                                <p class="text-muted">Member Since</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h3 class="text-warning"><?= Html::encode($customer->country->name ?? 'N/A') ?></h3>
+                                <p class="text-muted">Location</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Recent Activity Section -->
         <div class="col-md-12 mt-4">

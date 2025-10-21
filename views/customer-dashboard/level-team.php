@@ -179,7 +179,7 @@ $levelCounts = calculateLevelCounts($levelTeam);
                             <?php 
                             // Get all active levels from LevelPlan table
                             $activeLevels = \app\models\LevelPlan::getActiveLevels()->all();
-                            $colors = ['primary', 'success', 'warning', 'danger', 'info', 'secondary', 'dark', 'light'];
+                            $colors = ['primary', 'success', 'warning', 'danger', 'info', 'secondary', 'light'];
                             ?>
                             <?php foreach ($activeLevels as $index => $levelPlan): ?>
                                 <div class="col-md-2 col-sm-4 col-6 mb-3">
@@ -203,7 +203,7 @@ $levelCounts = calculateLevelCounts($levelTeam);
                                 <div class="info-box bg-warning">
                                     <span class="info-box-icon"><i class="fas fa-gift"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Free Package (Unpaid)</span>
+                                        <span class="info-box-text">Open Package (Unpaid)</span>
                                         <span class="info-box-number"><?= $packageStats['free']['unpaid'] ?></span>
                                     </div>
                                 </div>

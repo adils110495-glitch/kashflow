@@ -212,7 +212,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <span class="info-box-icon bg-info"><i class="feather icon-clock"></i></span>
                                         <div class="info-box-content">
                                             <span class="info-box-text">Processing Time</span>
-                                            <span class="info-box-number">1-3 Business Days</span>
+                                            <span class="info-box-number">Maximum 72 Hours</span>
                                         </div>
                                     </div>
 
@@ -220,7 +220,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <span class="info-box-icon bg-success"><i class="feather icon-shield"></i></span>
                                         <div class="info-box-content">
                                             <span class="info-box-text">Minimum Amount</span>
-                                            <span class="info-box-number">$10.00</span>
+                                            <span class="info-box-number">$500 </span>
                                         </div>
                                     </div>
 

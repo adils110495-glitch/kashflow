@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <div class="row align-items-center">
                                         <div class="col-8">
                                             <h4 class="text-white">$<?= number_format($stats['roi_income'], 2) ?></h4>
-                                            <h6 class="text-white m-b-0">ROI Earnings</h6>
+                                            <h6 class="text-white m-b-0">Regular Earnings</h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <i class="feather icon-trending-up f-28"></i>
