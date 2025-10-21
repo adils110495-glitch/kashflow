@@ -90,6 +90,20 @@ $customer = Customer::find()
                     </a>
                 </li>
                 
+                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'fund-request' ? 'active' : '' ?>">
+                    <a href="<?= Url::to(['/customer-dashboard/fund-request']) ?>" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-plus-circle"></i></span>
+                        <span class="pcoded-mtext">Fund Request</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'fund-transfer' ? 'active' : '' ?>">
+                    <a href="<?= Url::to(['/customer-dashboard/fund-transfer']) ?>" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-repeat"></i></span>
+                        <span class="pcoded-mtext">Fund Transfer</span>
+                    </a>
+                </li>
+                
                 <!-- Support Section -->
                 <li class="nav-item pcoded-menu-caption">
                     <label>Support & Complaints</label>

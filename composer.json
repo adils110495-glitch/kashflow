@@ -23,7 +23,8 @@
         "kartik-v/yii2-widget-select2": "*",
         "kartik-v/yii2-widget-datepicker": "*",
         "wbraganca/yii2-dynamicform": "^2.0",
-        "kartik-v/yii2-widget-fileinput": "^1.1"
+        "kartik-v/yii2-widget-fileinput": "^1.1",
+        "kartik-v/bootstrap-fileinput": "^5.5"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

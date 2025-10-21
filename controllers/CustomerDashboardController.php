@@ -587,6 +587,68 @@ class CustomerDashboardController extends Controller
      }
 
     /**
+     * Fund request action
+     */
+    public function actionFundRequest()
+    {
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            throw new NotFoundHttpException('Customer not found.');
+        }
+
+        $fundRequest = new \app\models\FundRequest();
+
+        if (Yii::$app->request->isPost) {
+            $fundRequest->load(Yii::$app->request->post());
+            $fundRequest->customer_id = $customer->id;
+            $fundRequest->request_date = date('Y-m-d');
+
+            // Handle file uploads
+            $uploadedFile = \yii\web\UploadedFile::getInstance($fundRequest, 'attachment_file');
+            
+            // Validate attachment file is required
+            if (!$uploadedFile) {
+                Yii::$app->session->setFlash('error', 'Attachment file is required.');
+            } else {
+                // Validate file size (5MB limit)
+                if ($uploadedFile->size > 5 * 1024 * 1024) {
+                    Yii::$app->session->setFlash('error', 'Attachment file size must not exceed 5MB.');
+                } else {
+                    $fileName = 'attachment_' . time() . '_' . $uploadedFile->baseName . '.' . $uploadedFile->extension;
+                    $filePath = 'uploads/fund_requests/' . $fileName;
+                    if (!is_dir('uploads/fund_requests/')) {
+                        mkdir('uploads/fund_requests/', 0755, true);
+                    }
+                    if ($uploadedFile->saveAs($filePath)) {
+                        $fundRequest->attachment_file = $filePath;
+                        
+                        if ($fundRequest->save()) {
+                            Yii::$app->session->setFlash('success', 'Fund request submitted successfully.');
+                            return $this->redirect(['fund-request']);
+                        } else {
+                            Yii::$app->session->setFlash('error', 'Failed to submit fund request.');
+                        }
+                    } else {
+                        Yii::$app->session->setFlash('error', 'Failed to upload attachment file.');
+                    }
+                }
+            }
+        }
+
+        // Get customer's fund request history
+        $fundRequests = \app\models\FundRequest::getCustomerRequests($customer->id, 10);
+
+        return $this->render('fund-request', [
+            'customer' => $customer,
+            'fundRequest' => $fundRequest,
+            'fundRequests' => $fundRequests,
+        ]);
+    }
+
+    /**
      * Displays customer tickets/complaints
      */
     public function actionTickets()
@@ -813,6 +875,120 @@ class CustomerDashboardController extends Controller
             'messages' => $messages,
             'can_communicate' => $ticket->canCustomerCommunicate()
         ];
+    }
+
+    /**
+     * Fund transfer functionality for customers
+     */
+    public function actionFundTransfer()
+    {
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            throw new NotFoundHttpException('Customer not found.');
+        }
+
+        $fundTransfer = new \app\models\FundTransfer();
+
+        if (Yii::$app->request->isPost) {
+            $fundTransfer->load(Yii::$app->request->post());
+            $fundTransfer->from_customer_id = $customer->id;
+            $fundTransfer->transfer_date = date('Y-m-d');
+            $fundTransfer->transfer_type = \app\models\FundTransfer::TYPE_CUSTOMER_TO_CUSTOMER;
+            $fundTransfer->status = \app\models\FundTransfer::STATUS_PENDING;
+
+            // Validate sufficient balance
+            if (!\app\models\FundTransfer::hasSufficientBalance($customer->id, $fundTransfer->amount)) {
+                Yii::$app->session->setFlash('error', 'Insufficient balance for this transfer.');
+            } else {
+                if ($fundTransfer->save()) {
+                    Yii::$app->session->setFlash('success', 'Fund transfer request submitted successfully. It will be processed by admin.');
+                    return $this->redirect(['fund-transfer']);
+                } else {
+                    Yii::$app->session->setFlash('error', 'Failed to submit fund transfer request.');
+                }
+            }
+        }
+
+        // Get customer's transfer history
+        $outgoingTransfers = \app\models\FundTransfer::getCustomerOutgoingTransfers($customer->id, 10);
+        $incomingTransfers = \app\models\FundTransfer::getCustomerIncomingTransfers($customer->id, 10);
+        
+        // Get transfers pending receiver approval
+        $pendingReceiverApprovalTransfers = \app\models\FundTransfer::getCustomerPendingReceiverApprovalTransfers($customer->id);
+
+        // Get all customers for transfer dropdown
+        $customers = Customer::find()
+            ->with('user')
+            ->where(['!=', 'id', $customer->id])
+            ->all();
+
+        return $this->render('fund-transfer', [
+            'customer' => $customer,
+            'fundTransfer' => $fundTransfer,
+            'outgoingTransfers' => $outgoingTransfers,
+            'incomingTransfers' => $incomingTransfers,
+            'pendingReceiverApprovalTransfers' => $pendingReceiverApprovalTransfers,
+            'customers' => $customers,
+        ]);
+    }
+
+    /**
+     * Receiver approval for fund transfers
+     */
+    public function actionFundTransferApproval($id)
+    {
+        $customer = Customer::find()
+            ->where(['user_id' => Yii::$app->user->id])
+            ->one();
+
+        if (!$customer) {
+            throw new NotFoundHttpException('Customer not found.');
+        }
+
+        $fundTransfer = \app\models\FundTransfer::find()
+            ->where(['id' => $id, 'to_customer_id' => $customer->id])
+            ->one();
+
+        if (!$fundTransfer) {
+            throw new NotFoundHttpException('Fund transfer not found or you are not authorized to approve this transfer.');
+        }
+
+        if (!$fundTransfer->canBeApprovedByReceiver()) {
+            Yii::$app->session->setFlash('error', 'This transfer cannot be approved at this time.');
+            return $this->redirect(['fund-transfer']);
+        }
+
+        if (Yii::$app->request->isPost) {
+            $action = Yii::$app->request->post('action', '');
+            $comment = Yii::$app->request->post('receiver_comment', '');
+
+            if ($action === 'approve') {
+                $status = \app\models\FundTransfer::STATUS_RECEIVER_APPROVED;
+                $message = 'Fund transfer approved successfully.';
+            } elseif ($action === 'reject') {
+                $status = \app\models\FundTransfer::STATUS_RECEIVER_REJECTED;
+                $message = 'Fund transfer rejected successfully.';
+            } else {
+                Yii::$app->session->setFlash('error', 'Invalid action.');
+                return $this->redirect(['fund-transfer']);
+            }
+
+            if ($fundTransfer->processReceiverApproval($status, $comment)) {
+                Yii::$app->session->setFlash('success', $message);
+            } else {
+                Yii::$app->session->setFlash('error', 'Failed to process fund transfer approval.');
+            }
+
+            return $this->redirect(['fund-transfer']);
+        }
+
+        return $this->render('fund-transfer-approval', [
+            'customer' => $customer,
+            'fundTransfer' => $fundTransfer,
+        ]);
     }
 
 
