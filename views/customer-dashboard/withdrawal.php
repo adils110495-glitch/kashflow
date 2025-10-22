@@ -136,22 +136,38 @@ $this->params['breadcrumbs'][] = $this->title;
                                         ]); ?>
                                         
                                         <div class="form-group">
+                                            <?= Html::label('Withdrawal Method', 'withdrawal_method', ['class' => 'form-label']) ?>
+                                            <?= Html::dropDownList('withdrawal_method', 'UPI', [
+                                                'UPI' => 'UPI',
+                                                'Cash' => 'Cash',
+                                                'Crypto' => 'Crypto'
+                                            ], [
+                                                'class' => 'form-control',
+                                                'required' => true,
+                                                'id' => 'withdrawal_method'
+                                            ]) ?>
+                                            <small class="form-text text-muted">
+                                                Select your preferred withdrawal method.
+                                            </small>
+                                        </div>
+
+                                        <div class="form-group">
                                             <?= Html::label('Withdrawal Amount', 'amount', ['class' => 'form-label']) ?>
                                             <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">$</span>
-                                                </div>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">₹</span>
+                </div>
                                                 <?= Html::input('number', 'amount', '', [
                                                     'class' => 'form-control',
                                                     'step' => '0.01',
-                                                    'min' => '0.01',
+                                                    'min' => \app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT,
                                                     'max' => $currentBalance,
                                                     'required' => true,
-                                                    'placeholder' => 'Enter withdrawal amount'
+                                                    'placeholder' => 'Enter withdrawal amount (minimum ₹' . \app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT . ')'
                                                 ]) ?>
                                             </div>
                                             <small class="form-text text-muted">
-                                                Maximum withdrawal amount: $<?= number_format($currentBalance, 2) ?>
+                                                Minimum withdrawal: ₹<?= number_format(\app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT, 2) ?> | Maximum withdrawal: ₹<?= number_format($currentBalance, 2) ?>
                                             </small>
                                         </div>
 
@@ -161,9 +177,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 'class' => 'form-control',
                                                 'rows' => 4,
                                                 'required' => true,
-                                                'placeholder' => 'Enter your account details (bank account number, PayPal email, wallet address, etc.)'
+                                                'placeholder' => 'Enter your UPI ID (e.g., username@paytm, username@phonepe)',
+                                                'id' => 'account_details'
                                             ]) ?>
-                                            <small class="form-text text-muted">
+                                            <small class="form-text text-muted" id="account_details_help">
                                                 Please provide accurate account details for processing your withdrawal.
                                             </small>
                                         </div>
@@ -187,6 +204,35 @@ $this->params['breadcrumbs'][] = $this->title;
                                         </div>
 
                                         <?php ActiveForm::end(); ?>
+                                        
+                                        <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const withdrawalMethodSelect = document.getElementById('withdrawal_method');
+                                            const accountDetailsTextarea = document.getElementById('account_details');
+                                            const accountDetailsHelp = document.getElementById('account_details_help');
+                                            
+                                            const methodPlaceholders = {
+                                                'UPI': 'Enter your UPI ID (e.g., username@paytm, username@phonepe)',
+                                                'Cash': 'Enter your bank account details (Account number, IFSC code, Bank name)',
+                                                'Crypto': 'Enter your crypto wallet address (Bitcoin, Ethereum, etc.)'
+                                            };
+                                            
+                                            const methodHelpTexts = {
+                                                'UPI': 'Please provide your UPI ID for instant transfer.',
+                                                'Cash': 'Please provide accurate bank account details for wire transfer.',
+                                                'Crypto': 'Please provide your crypto wallet address for digital currency transfer.'
+                                            };
+                                            
+                                            function updatePlaceholder() {
+                                                const selectedMethod = withdrawalMethodSelect.value;
+                                                accountDetailsTextarea.placeholder = methodPlaceholders[selectedMethod];
+                                                accountDetailsHelp.textContent = methodHelpTexts[selectedMethod];
+                                            }
+                                            
+                                            withdrawalMethodSelect.addEventListener('change', updatePlaceholder);
+                                            updatePlaceholder(); // Initialize on page load
+                                        });
+                                        </script>
                                     <?php else: ?>
                                         <div class="alert alert-warning text-center">
                                             <i class="fas fa-exclamation-triangle"></i>
@@ -220,7 +266,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <span class="info-box-icon bg-success"><i class="feather icon-shield"></i></span>
                                         <div class="info-box-content">
                                             <span class="info-box-text">Minimum Amount</span>
-                                            <span class="info-box-number">$10.00</span>
+                                            <span class="info-box-number">₹<?= number_format(\app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT, 2) ?></span>
                                         </div>
                                     </div>
 
@@ -264,6 +310,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     <tr>
                                                         <th>Date</th>
                                                         <th>Amount</th>
+                                                        <th>Method</th>
                                                         <th>Status</th>
                                                         <th>Action By</th>
                                                         <th>Action Time</th>
@@ -273,8 +320,11 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     <?php foreach ($withdrawalHistory as $withdrawal): ?>
                                                         <tr>
                                                             <td><?= Html::encode($withdrawal->getFormattedDate()) ?></td>
+                <td>
+                    <strong class="text-danger">-₹<?= number_format($withdrawal->amount, 2) ?></strong>
+                </td>
                                                             <td>
-                                                                <strong class="text-danger">-$<?= number_format($withdrawal->amount, 2) ?></strong>
+                                                                <?= $withdrawal->getWithdrawalMethodLabel() ?>
                                                             </td>
                                                             <td>
                                                                 <?= $withdrawal->getStatusLabel() ?>

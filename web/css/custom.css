@@ -1,6 +1,126 @@
 /* Custom CSS for Kashflow Application */
 /* Always use Bootstrap classes first, then add custom styles as needed */
 
+/* Customer Topbar Icons Styling */
+.navbar-nav .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+}
+
+.navbar-nav .nav-item a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    text-decoration: none !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.navbar-nav .nav-item a:hover {
+    text-decoration: none !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Clean icon styling */
+.navbar-nav .nav-item i {
+    color: #ffffff !important;
+    font-size: 1.1rem !important;
+    font-weight: normal !important;
+}
+
+/* Copy icon styling */
+.navbar-nav .nav-item #copy-registration-link {
+    background: rgba(23, 162, 184, 0.1) !important;
+    border: 1px solid rgba(23, 162, 184, 0.3) !important;
+}
+
+.navbar-nav .nav-item #copy-registration-link:hover {
+    background: rgba(23, 162, 184, 0.2) !important;
+    border-color: rgba(23, 162, 184, 0.5) !important;
+}
+
+.navbar-nav .nav-item #copy-registration-link i {
+    color: #17a2b8 !important;
+}
+
+/* WhatsApp icon styling */
+.navbar-nav .nav-item #whatsapp-share-link {
+    background: rgba(37, 211, 102, 0.1) !important;
+    border: 1px solid rgba(37, 211, 102, 0.3) !important;
+}
+
+.navbar-nav .nav-item #whatsapp-share-link:hover {
+    background: rgba(37, 211, 102, 0.2) !important;
+    border-color: rgba(37, 211, 102, 0.5) !important;
+}
+
+.navbar-nav .nav-item #whatsapp-share-link i {
+    color: #25D366 !important;
+}
+
+/* Notification badge styling */
+.navbar-nav .nav-item .badge {
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    background-color: #dc3545 !important;
+    color: white !important;
+    border-radius: 12px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 6px !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* User profile styling */
+.navbar-nav .nav-item .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.navbar-nav .nav-item .avatar-circle {
+    width: 32px !important;
+    height: 32px !important;
+    background: #007bff !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+}
+
+/* Dropdown toggle styling */
+.navbar-nav .nav-item .dropdown-toggle {
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+
 
 
 
@@ -1379,5 +1499,226 @@ select:-webkit-autofill:focus {
     .kashflow-form-container {
         max-width: 100%;
         padding: 0;
+    }
+}
+
+/* Clean Topbar Icons Styling - Matching Image Design */
+.navbar-nav .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+}
+
+.navbar-nav .nav-item a {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    text-decoration: none !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.navbar-nav .nav-item a:hover {
+    text-decoration: none !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Clean icon styling */
+.navbar-nav .nav-item i {
+    color: #ffffff !important;
+    font-size: 1.1rem !important;
+    font-weight: normal !important;
+}
+
+/* Notification icon specific styling */
+.navbar-nav .nav-item .dropdown-toggle {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.navbar-nav .nav-item .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Notification badge styling - matching image */
+.navbar-nav .nav-item .badge {
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    background-color: #dc3545 !important;
+    color: white !important;
+    border-radius: 12px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 6px !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Copy icon styling */
+.navbar-nav .nav-item #copy-registration-link {
+    background: rgba(23, 162, 184, 0.1) !important;
+    border: 1px solid rgba(23, 162, 184, 0.3) !important;
+}
+
+.navbar-nav .nav-item #copy-registration-link:hover {
+    background: rgba(23, 162, 184, 0.2) !important;
+    border-color: rgba(23, 162, 184, 0.5) !important;
+}
+
+.navbar-nav .nav-item #copy-registration-link i {
+    color: #17a2b8 !important;
+}
+
+/* WhatsApp icon styling */
+.navbar-nav .nav-item #whatsapp-share-link {
+    background: rgba(37, 211, 102, 0.1) !important;
+    border: 1px solid rgba(37, 211, 102, 0.3) !important;
+}
+
+.navbar-nav .nav-item #whatsapp-share-link:hover {
+    background: rgba(37, 211, 102, 0.2) !important;
+    border-color: rgba(37, 211, 102, 0.5) !important;
+}
+
+.navbar-nav .nav-item #whatsapp-share-link i {
+    color: #25D366 !important;
+}
+
+/* User profile styling */
+.navbar-nav .nav-item .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.navbar-nav .nav-item .avatar-circle {
+    width: 32px !important;
+    height: 32px !important;
+    background: #007bff !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+}
+
+/* Dropdown toggle styling */
+.navbar-nav .nav-item .dropdown-toggle {
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Toast notification animations */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.toast-notification {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.toast-notification.fade-out {
+    animation: slideOutRight 0.3s ease-out;
+}
+
+/* Responsive adjustments for share icons */
+@media (max-width: 768px) {
+    .badge {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+    
+    .dropdown-menu {
+        font-size: 14px;
+    }
+}
+
+/* Copy Toast Notification Styling */
+.copy-toast {
+    position: absolute !important;
+    z-index: 9999 !important;
+    pointer-events: none !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    user-select: none !important;
+    animation: copyToastSlideIn 0.3s ease-out !important;
+}
+
+.copy-toast-success {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.copy-toast-error {
+    background: linear-gradient(135deg, #dc3545, #e74c3c) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+@keyframes copyToastSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes copyToastSlideOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.9);
     }
 }

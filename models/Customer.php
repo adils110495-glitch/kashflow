@@ -35,6 +35,11 @@ class Customer extends BaseCustomer
     const STATUS_CANCELLED = 4;
     const STATUS_SUSPENDED = 5;
 
+    // KYC Status constants
+    const KYC_STATUS_PENDING = 0;
+    const KYC_STATUS_VERIFIED = 1;
+    const KYC_STATUS_REJECTED = 2;
+
     /**
      * Generate next customer username in format KF000001
      * @return string
@@ -1093,5 +1098,345 @@ class Customer extends BaseCustomer
         }
         
         return $result;
+    }
+
+    /**
+     * Get KYC status text
+     * @return string
+     */
+    public function getKycStatusText()
+    {
+        // If required documents are not uploaded, show as unverified
+        if (!$this->hasRequiredKycDocuments()) {
+            return 'Unverified';
+        }
+        
+        $statusMap = [
+            self::KYC_STATUS_PENDING => 'Pending',
+            self::KYC_STATUS_VERIFIED => 'Verified',
+            self::KYC_STATUS_REJECTED => 'Rejected',
+        ];
+        
+        return $statusMap[$this->kyc_status] ?? 'Unknown';
+    }
+
+    /**
+     * Get KYC status badge HTML
+     * @return string
+     */
+    public function getKycStatusBadge()
+    {
+        $badgeClass = '';
+        $text = $this->getKycStatusText();
+        
+        // If required documents are not uploaded, show as unverified
+        if (!$this->hasRequiredKycDocuments()) {
+            $badgeClass = 'badge-danger';
+            $text = 'Unverified';
+        } else {
+            switch ($this->kyc_status) {
+                case self::KYC_STATUS_VERIFIED:
+                    $badgeClass = 'badge-success';
+                    break;
+                case self::KYC_STATUS_REJECTED:
+                    $badgeClass = 'badge-danger';
+                    break;
+                case self::KYC_STATUS_PENDING:
+                default:
+                    $badgeClass = 'badge-warning';
+                    break;
+            }
+        }
+        
+        return "<span class=\"badge {$badgeClass}\">{$text}</span>";
+    }
+
+    /**
+     * Check if customer KYC is verified
+     * @return bool
+     */
+    public function isKycVerified()
+    {
+        return $this->hasRequiredKycDocuments() && $this->kyc_status === self::KYC_STATUS_VERIFIED;
+    }
+
+    /**
+     * Get KYC verification relation
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKycVerifiedBy()
+    {
+        return $this->hasOne(\dektrium\user\models\User::class, ['id' => 'kyc_verified_by']);
+    }
+
+    /**
+     * Update KYC status
+     * @param int $status
+     * @param int|null $verifiedBy
+     * @return bool
+     */
+    public function updateKycStatus($status, $verifiedBy = null)
+    {
+        $this->kyc_status = $status;
+        
+        if ($status === self::KYC_STATUS_VERIFIED) {
+            $this->kyc_verified_at = date('Y-m-d H:i:s');
+            $this->kyc_verified_by = $verifiedBy ?: \Yii::$app->user->id;
+        } else {
+            $this->kyc_verified_at = null;
+            $this->kyc_verified_by = null;
+        }
+        
+        return $this->save();
+    }
+
+    /**
+     * Get formatted KYC verification date
+     * @return string
+     */
+    public function getFormattedKycVerifiedAt()
+    {
+        if (!$this->kyc_verified_at) {
+            return 'Not verified';
+        }
+        
+        return date('M d, Y H:i', strtotime($this->kyc_verified_at));
+    }
+
+    /**
+     * Check if customer has uploaded both Aadhar and PAN cards
+     * @return bool
+     */
+    public function hasRequiredKycDocuments()
+    {
+        return !empty($this->aadhar_number) && 
+               !empty($this->aadhar_card_image) && 
+               !empty($this->pan_number) && 
+               !empty($this->pan_card_image);
+    }
+
+    /**
+     * Get KYC completion status
+     * @return array
+     */
+    public function getKycCompletionStatus()
+    {
+        return [
+            'aadhar_number' => !empty($this->aadhar_number),
+            'aadhar_card_image' => !empty($this->aadhar_card_image),
+            'pan_number' => !empty($this->pan_number),
+            'pan_card_image' => !empty($this->pan_card_image),
+            'crypto_wallet_address' => !empty($this->crypto_wallet_address),
+            'upi_id' => !empty($this->upi_id),
+            'qr_code_image' => !empty($this->qr_code_image),
+            'all_required_docs' => $this->hasRequiredKycDocuments(),
+        ];
+    }
+
+    /**
+     * Validate Aadhar number format
+     * @param string $aadharNumber
+     * @return bool
+     */
+    public static function validateAadharNumber($aadharNumber)
+    {
+        // Aadhar number should be 12 digits
+        return preg_match('/^\d{12}$/', $aadharNumber);
+    }
+
+    /**
+     * Validate PAN number format
+     * @param string $panNumber
+     * @return bool
+     */
+    public static function validatePanNumber($panNumber)
+    {
+        // PAN format: 5 letters, 4 digits, 1 letter
+        return preg_match('/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/', strtoupper($panNumber));
+    }
+
+    /**
+     * Get masked Aadhar number for display
+     * @return string
+     */
+    public function getMaskedAadharNumber()
+    {
+        if (empty($this->aadhar_number)) {
+            return 'Not provided';
+        }
+        
+        return substr($this->aadhar_number, 0, 4) . '****' . substr($this->aadhar_number, -4);
+    }
+
+    /**
+     * Get masked PAN number for display
+     * @return string
+     */
+    public function getMaskedPanNumber()
+    {
+        if (empty($this->pan_number)) {
+            return 'Not provided';
+        }
+        
+        return substr($this->pan_number, 0, 2) . '****' . substr($this->pan_number, -3);
+    }
+
+    /**
+     * Validate IFSC code format
+     * @param string $ifscCode
+     * @return bool
+     */
+    public static function validateIfscCode($ifscCode)
+    {
+        // IFSC format: 4 letters (bank code) + 7 characters (branch code)
+        return preg_match('/^[A-Z]{4}[0-9]{7}$/', strtoupper($ifscCode));
+    }
+
+    /**
+     * Validate bank account number format
+     * @param string $accountNumber
+     * @return bool
+     */
+    public static function validateBankAccountNumber($accountNumber)
+    {
+        // Bank account number should be 9-18 digits
+        return preg_match('/^\d{9,18}$/', $accountNumber);
+    }
+
+    /**
+     * Get masked bank account number for display
+     * @return string
+     */
+    public function getMaskedBankAccountNumber()
+    {
+        if (empty($this->bank_account_number)) {
+            return 'Not provided';
+        }
+        
+        $accountNumber = $this->bank_account_number;
+        $length = strlen($accountNumber);
+        
+        if ($length <= 4) {
+            return str_repeat('*', $length);
+        }
+        
+        return substr($accountNumber, 0, 2) . str_repeat('*', $length - 4) . substr($accountNumber, -2);
+    }
+
+    /**
+     * Get bank account type options
+     * @return array
+     */
+    public static function getBankAccountTypeOptions()
+    {
+        return [
+            'Savings' => 'Savings Account',
+            'Current' => 'Current Account',
+            'Fixed' => 'Fixed Deposit',
+            'Recurring' => 'Recurring Deposit',
+        ];
+    }
+
+    /**
+     * Check if customer has complete bank account details
+     * @return bool
+     */
+    public function hasCompleteBankAccountDetails()
+    {
+        return !empty($this->bank_account_number) && 
+               !empty($this->bank_account_holder_name) && 
+               !empty($this->bank_name) && 
+               !empty($this->bank_ifsc_code) && 
+               !empty($this->bank_branch_name) && 
+               !empty($this->bank_account_type);
+    }
+
+    /**
+     * Get bank account completion status
+     * @return array
+     */
+    public function getBankAccountCompletionStatus()
+    {
+        return [
+            'bank_account_number' => !empty($this->bank_account_number),
+            'bank_account_holder_name' => !empty($this->bank_account_holder_name),
+            'bank_name' => !empty($this->bank_name),
+            'bank_ifsc_code' => !empty($this->bank_ifsc_code),
+            'bank_branch_name' => !empty($this->bank_branch_name),
+            'bank_account_type' => !empty($this->bank_account_type),
+            'all_bank_details' => $this->hasCompleteBankAccountDetails(),
+        ];
+    }
+
+    /**
+     * Get customer's preferred currency
+     * @return Currency|null
+     */
+    public function getPreferredCurrency()
+    {
+        return $this->currency ?: \app\models\Currency::getBaseCurrency();
+    }
+
+    /**
+     * Get currency code
+     * @return string
+     */
+    public function getCurrencyCode()
+    {
+        $currency = $this->getPreferredCurrency();
+        return $currency ? $currency->code : 'INR';
+    }
+
+    /**
+     * Get currency symbol
+     * @return string
+     */
+    public function getCurrencySymbol()
+    {
+        $currency = $this->getPreferredCurrency();
+        return $currency ? $currency->symbol : '₹';
+    }
+
+    /**
+     * Format amount in customer's preferred currency
+     * @param float $amount
+     * @param bool $showCode
+     * @return string
+     */
+    public function formatAmount($amount, $showCode = false)
+    {
+        $currency = $this->getPreferredCurrency();
+        if ($currency) {
+            return $currency->formatAmount($amount, $showCode);
+        }
+        
+        return '₹' . number_format($amount, 2);
+    }
+
+    /**
+     * Convert amount to customer's preferred currency
+     * @param float $amount
+     * @param string $fromCurrencyCode
+     * @return float
+     */
+    public function convertToPreferredCurrency($amount, $fromCurrencyCode = 'INR')
+    {
+        $preferredCurrency = $this->getPreferredCurrency();
+        $fromCurrency = \app\models\Currency::getByCode($fromCurrencyCode);
+        
+        if (!$preferredCurrency || !$fromCurrency) {
+            return $amount;
+        }
+        
+        return $fromCurrency->convertTo($amount, $preferredCurrency);
+    }
+
+    /**
+     * Get currency options for customer
+     * @return array
+     */
+    public static function getCurrencyOptionsForCustomer()
+    {
+        return \app\models\Currency::getCurrencyOptions();
     }
 }

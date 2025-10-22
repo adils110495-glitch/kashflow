@@ -31,6 +31,14 @@ class Withdrawal extends BaseWithdrawal
     const STATUS_PROCESSING = 3;
     const STATUS_COMPLETED = 4;
 
+    // Withdrawal method constants
+    const METHOD_UPI = 'UPI';
+    const METHOD_CASH = 'Cash';
+    const METHOD_CRYPTO = 'Crypto';
+
+    // Withdrawal amount constants
+    const MIN_WITHDRAWAL_AMOUNT = 500; // Minimum withdrawal amount in INR
+
     /**
      * {@inheritdoc}
      */
@@ -92,20 +100,65 @@ class Withdrawal extends BaseWithdrawal
     }
 
     /**
+     * Get withdrawal method options
+     * @return array
+     */
+    public static function getWithdrawalMethodOptions()
+    {
+        return [
+            self::METHOD_UPI => 'UPI',
+            self::METHOD_CASH => 'Cash',
+            self::METHOD_CRYPTO => 'Crypto',
+        ];
+    }
+
+    /**
+     * Get withdrawal method label with icon
+     * @return string
+     */
+    public function getWithdrawalMethodLabel()
+    {
+        $methodLabels = [
+            self::METHOD_UPI => '<span class="badge badge-primary"><i class="fas fa-mobile-alt"></i> UPI</span>',
+            self::METHOD_CASH => '<span class="badge badge-success"><i class="fas fa-money-bill"></i> Cash</span>',
+            self::METHOD_CRYPTO => '<span class="badge badge-warning"><i class="fab fa-bitcoin"></i> Crypto</span>',
+        ];
+        
+        return $methodLabels[$this->withdrawal_method] ?? '<span class="badge badge-secondary">' . $this->withdrawal_method . '</span>';
+    }
+
+    /**
+     * Get withdrawal method text
+     * @return string
+     */
+    public function getWithdrawalMethodText()
+    {
+        $methodMap = [
+            self::METHOD_UPI => 'UPI',
+            self::METHOD_CASH => 'Cash',
+            self::METHOD_CRYPTO => 'Crypto',
+        ];
+        
+        return $methodMap[$this->withdrawal_method] ?? $this->withdrawal_method;
+    }
+
+    /**
      * Create a new withdrawal request
      * @param int $customerId
      * @param float $amount
+     * @param string $withdrawalMethod
      * @param string $comment
      * @param int $actionBy
      * @param string $date
      * @return bool
      */
-    public static function createWithdrawalRequest($customerId, $amount, $comment = '', $actionBy, $date = null)
+    public static function createWithdrawalRequest($customerId, $amount, $withdrawalMethod = self::METHOD_UPI, $comment = '', $actionBy, $date = null)
     {
         $withdrawal = new self();
         $withdrawal->customer_id = $customerId;
         $withdrawal->date = $date ?: date('Y-m-d');
         $withdrawal->amount = $amount;
+        $withdrawal->withdrawal_method = $withdrawalMethod;
         $withdrawal->status = self::STATUS_PENDING;
         $withdrawal->comment = $comment;
         $withdrawal->action_by = $actionBy;
