@@ -9,6 +9,9 @@ use app\models\Customer;
 
 $this->title = 'Dashboard';
 $this->params['breadcrumbs'][] = $this->title;
+
+// Get customer's currency information
+$customerCurrency = $customer->getCurrencyForDisplay();
 ?>
 
 <div class="customer-dashboard-index">
@@ -31,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-briefcase text-info mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center">
-                                <h5>₹<?= number_format($additionalMetrics['investment'], 2) ?></h5>
+                                <h5><?= $customer->formatCurrencyAmount($customer->convertFromInr($additionalMetrics['investment'])) ?></h5>
                                 <span>Investment</span>
                             </div>
                         </div>
@@ -42,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-dollar-sign text-success mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center p-0">
-                                <h5>₹<?= number_format($financialData['currentMonthIncome'], 2) ?></h5>
+                                <h5><?= $customer->formatCurrencyAmount($customer->convertFromInr($financialData['currentMonthIncome'])) ?></h5>
                                 <span><b><?= date('M')?></b> Earnings</span>
                             </div>
                         </div>
@@ -55,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-credit-card text-danger mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center p-0">
-                                <h5>₹<?= number_format($financialData['totalWithdrawal'], 2) ?></h5>
+                                <h5><?= $customer->formatCurrencyAmount($customer->convertFromInr($financialData['totalWithdrawal'])) ?></h5>
                                 <span>Earning Released</span>
                             </div>
                         </div>
@@ -66,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-wallet text-warning mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center p-0">
-                                <h5>₹<?= number_format($financialData['currentBalance'], 2) ?></h5>
+                                <h5><?= $customer->formatCurrencyAmount($customer->convertFromInr($financialData['currentBalance'])) ?></h5>
                                 <span>Earning Balance</span>
                             </div>
                         </div>
@@ -100,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-chart-line text-primary mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center p-0">
-                                <h5>₹<?= number_format($financialData['totalIncome'], 2) ?></h5>
+                                <h5><?= $customer->formatCurrencyAmount($customer->convertFromInr($financialData['totalIncome'])) ?></h5>
                                 <span>Total Earnings</span>
                             </div>
                         </div>
@@ -135,7 +138,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <i class="fas fa-chart-line text-warning mb-1 d-block"></i>
                             </div>
                             <div class="col-sm-8 text-md-center">
-                                <h5>₹<?= number_format($additionalMetrics['profit'], 2) ?></h5>
+                                <h5><?= $customer->formatCurrencyAmount($customer->convertFromInr($additionalMetrics['profit'])) ?></h5>
                                 <span>Total Profit</span>
                             </div>
                         </div>
@@ -194,8 +197,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-body">
                     <?php if ($customer->currentPackage): ?>
                         <h4 class="text-primary"><?= Html::encode($customer->currentPackage->name) ?></h4>
-                        <p><strong>Amount:</strong> ₹<?= number_format($customer->currentPackage->amount, 2) ?></p>
-                        <p><strong>Fee:</strong> ₹<?= number_format($customer->currentPackage->fee, 2) ?></p>
+                        <p><strong>Amount:</strong> <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->amount)) ?></p>
+                        <p><strong>Fee:</strong> <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->fee)) ?></p>
                         <p><strong>Status:</strong>
                             <span class="badge <?= $customer->currentPackage->status == 1 ? 'badge-success' : 'badge-warning' ?>">
                                 <?= $customer->currentPackage->getStatusText() ?>

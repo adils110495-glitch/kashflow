@@ -12,6 +12,10 @@ use yii\widgets\ActiveForm;
 
 $this->title = 'Fund Transfer';
 $this->params['breadcrumbs'][] = $this->title;
+
+// Get customer's currency information
+$customerCurrency = $customer->getCurrencyForDisplay();
+$currentBalanceInCustomerCurrency = $customer->convertFromInr($customer->getLedgerBalance());
 ?>
 
 <div class="fund-transfer">
@@ -25,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="alert alert-info">
                         <i class="feather icon-info"></i>
                         <strong>Current Balance:</strong> 
-                        <span class="text-success font-weight-bold">$<?= number_format($customer->getLedgerBalance(), 2) ?></span>
+                        <span class="text-success font-weight-bold"><?= $customer->formatCurrencyAmount($currentBalanceInCustomerCurrency) ?></span>
                     </div>
 
                     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
@@ -45,9 +49,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'type' => 'number',
                                 'step' => '0.01',
                                 'min' => '0.01',
-                                'max' => $customer->getLedgerBalance(),
-                                'class' => 'form-control'
-                            ])->label('Amount <span class="text-danger">*</span>') ?>
+                                'max' => $currentBalanceInCustomerCurrency,
+                                'class' => 'form-control',
+                                'id' => 'fundtransfer-amount'
+                            ])->label('Amount (' . $customerCurrency['symbol'] . ') <span class="text-danger">*</span>') ?>
                         </div>
                     </div>
 
@@ -91,7 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <ul class="small">
                         <li>Sufficient balance in your account</li>
                         <li>Valid recipient customer</li>
-                        <li>Amount must be greater than $0.01</li>
+                        <li>Amount must be greater than <?= $customerCurrency['symbol'] ?>0.01</li>
                         <li>Cannot transfer to yourself</li>
                     </ul>
                     
@@ -137,7 +142,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                             <small class="text-muted"><?= Html::encode($transfer->fromCustomer->user ? $transfer->fromCustomer->user->username : 'N/A') ?></small>
                                         </td>
                                         <td>
-                                            <strong class="text-success"><?= Html::encode($transfer->getFormattedAmount()) ?></strong>
+                                            <strong class="text-success"><?= $customer->formatCurrencyAmount($customer->convertFromInr($transfer->amount)) ?></strong>
                                         </td>
                                         <td><?= Html::encode($transfer->getFormattedTransferDate()) ?></td>
                                         <td>
@@ -191,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 <small class="text-muted"><?= Html::encode($transfer->toCustomer->user ? $transfer->toCustomer->user->username : 'N/A') ?></small>
                                             </td>
                                             <td>
-                                                <strong class="text-success"><?= Html::encode($transfer->getFormattedAmount()) ?></strong>
+                                                <strong class="text-success"><?= $customer->formatCurrencyAmount($customer->convertFromInr($transfer->amount)) ?></strong>
                                             </td>
                                             <td>
                                                 <?php
@@ -264,7 +269,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 <small class="text-muted"><?= Html::encode($transfer->fromCustomer->user ? $transfer->fromCustomer->user->username : 'N/A') ?></small>
                                             </td>
                                             <td>
-                                                <strong class="text-success"><?= Html::encode($transfer->getFormattedAmount()) ?></strong>
+                                                <strong class="text-success"><?= $customer->formatCurrencyAmount($customer->convertFromInr($transfer->amount)) ?></strong>
                                             </td>
                                             <td>
                                                 <?php
@@ -317,7 +322,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <script>
 $(document).ready(function() {
     // Update max amount based on current balance
-    const currentBalance = <?= $customer->getLedgerBalance() ?>;
+    const currentBalance = <?= $currentBalanceInCustomerCurrency ?>;
     $('#fundtransfer-amount').attr('max', currentBalance);
     
     // Validate amount
@@ -328,11 +333,11 @@ $(document).ready(function() {
         if (amount > maxAmount) {
             $(this).addClass('is-invalid');
             $(this).next('.invalid-feedback').remove();
-            $(this).after('<div class="invalid-feedback">Amount cannot exceed your current balance of $' + maxAmount.toFixed(2) + '</div>');
+            $(this).after('<div class="invalid-feedback">Amount cannot exceed your current balance of <?= $customer->formatCurrencyAmount($currentBalanceInCustomerCurrency) ?></div>');
         } else if (amount <= 0) {
             $(this).addClass('is-invalid');
             $(this).next('.invalid-feedback').remove();
-            $(this).after('<div class="invalid-feedback">Amount must be greater than $0.00</div>');
+            $(this).after('<div class="invalid-feedback">Amount must be greater than <?= $customerCurrency['symbol'] ?>0.00</div>');
         } else {
             $(this).removeClass('is-invalid');
             $(this).next('.invalid-feedback').remove();

@@ -183,18 +183,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // WhatsApp functionality
-    const whatsappBtn = document.getElementById('whatsapp-share-link');
-    if (whatsappBtn) {
-        whatsappBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('WhatsApp button clicked');
-            const link = this.getAttribute('data-link');
-            const message = 'Join me on KashFlow! Use my referral link to register: ' + link;
-            const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(message);
-            console.log('WhatsApp URL:', whatsappUrl);
-            window.open(whatsappUrl, '_blank');
-        });
-    }
+    // WhatsApp functionality is handled in custom.js
+    // Debug: Check if WhatsApp button exists
+    setTimeout(function() {
+        const whatsappBtn = document.getElementById('whatsapp-share-link');
+        if (whatsappBtn) {
+            console.log('WhatsApp button found:', whatsappBtn);
+            console.log('WhatsApp button data-link:', whatsappBtn.getAttribute('data-link'));
+        } else {
+            console.error('WhatsApp button not found!');
+        }
+    }, 1000);
 });
 </script>

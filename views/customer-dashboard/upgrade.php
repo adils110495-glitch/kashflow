@@ -12,6 +12,9 @@ use yii\helpers\Url;
 $this->title = 'Upgrade Package';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+// Get customer's currency information
+$customerCurrency = $customer->getCurrencyForDisplay();
 ?>
 
 <div class="upgrade-package">
@@ -30,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php if ($customer->currentPackage): ?>
                             <div class="alert alert-info">
                                 <strong><?= Html::encode($customer->currentPackage->name) ?></strong> - 
-                                $<?= number_format($customer->currentPackage->amount, 2) ?> 
-                                (Fee: $<?= number_format($customer->currentPackage->fee, 2) ?>)
+                                <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->amount)) ?> 
+                                (Fee: <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->fee)) ?>)
                             </div>
                         <?php else: ?>
                             <div class="alert alert-warning">
@@ -83,12 +86,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 </div>
                                                 <div class="card-body text-center">
                                                     <div class="package-price mb-3">
-                                                        <h2 class="text-success mb-0">$<?= number_format($package->amount, 2) ?></h2>
+                                                        <h2 class="text-success mb-0"><?= $customer->formatCurrencyAmount($customer->convertFromInr($package->amount)) ?></h2>
                                                         <small class="text-muted">Package Amount</small>
                                                     </div>
                                                     
                                                     <div class="package-fee mb-3">
-                                                        <h4 class="text-info mb-0">$<?= number_format($package->fee, 2) ?></h4>
+                                                        <h4 class="text-info mb-0"><?= $customer->formatCurrencyAmount($customer->convertFromInr($package->fee)) ?></h4>
                                                         <small class="text-muted">Processing Fee</small>
                                                     </div>
                                                     
@@ -108,7 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                         'class' => 'btn btn-success btn-block upgrade-btn',
                                                         'value' => $package->id,
                                                         'data-package-name' => $package->name,
-                                                        'data-package-price' => '$' . number_format($package->amount, 2)
+                                                        'data-package-price' => $customer->formatCurrencyAmount($customer->convertFromInr($package->amount))
                                                     ]) ?>
                                                 </div>
                                             </div>
