@@ -68,26 +68,14 @@ $customer = Customer::find()
                 <li class="nav-item pcoded-menu-caption">
                     <label>Account</label>
                 </li>
+
                 
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
-                        <span class="pcoded-mtext">Settings</span>
-                    </a>
-                </li>
-                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-credit-card"></i></span>
-                        <span class="pcoded-mtext">Fund Transfer</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
+                <!--<li class="nav-item">
                     <a href="#" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-file-text"></i></span>
                         <span class="pcoded-mtext">Invoices</span>
                     </a>
-                </li>
+                </li>-->
                 
                 
                 <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'withdrawal' ? 'active' : '' ?>">

@@ -13,8 +13,11 @@ use app\models\Income;
 /* @var $toDate string */
 /* @var $statusFilter string */
 
-$this->title = 'My Income';
+$this->title = 'My Earnings';
 $this->params['breadcrumbs'][] = $this->title;
+
+// Get customer's currency information
+$customerCurrency = $customer->getCurrencyForDisplay();
 ?>
 
 <div class="pcoded-content">
@@ -38,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($stats['total_income'], 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($customer->convertFromInr($stats['total_income'])) ?></h4>
                                             <h6 class="text-white m-b-0">Total Earnings</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -54,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($stats['roi_income'], 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($customer->convertFromInr($stats['roi_income'])) ?></h4>
                                             <h6 class="text-white m-b-0">Regular Earnings</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -70,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($stats['level_income'], 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($customer->convertFromInr($stats['level_income'])) ?></h4>
                                             <h6 class="text-white m-b-0">Network Earnings</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -86,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($stats['referral_income'], 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($customer->convertFromInr($stats['referral_income'])) ?></h4>
                                             <h6 class="text-white m-b-0">Referral Bonus</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -102,7 +105,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($stats['monthly_income'], 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($customer->convertFromInr($stats['monthly_income'])) ?></h4>
                                             <h6 class="text-white m-b-0">This Month</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -119,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Filter Income Records</h5>
+                                    <h5>Filter Earnings Records</h5>
                                 </div>
                                 <div class="card-body filter-section">
                                     <?= Html::beginForm(['income'], 'get', ['class' => 'row']) ?>
@@ -205,7 +208,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td>
-                                                                <strong class="text-success">$<?= number_format($income->amount, 2) ?></strong>
+                                                                <strong class="text-success"><?= $customer->formatCurrencyAmount($customer->convertFromInr($income->amount)) ?></strong>
                                                             </td>
                                                             <td>
                                                                 <?php if (!empty($income->meta)): ?>

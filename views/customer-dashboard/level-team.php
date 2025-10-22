@@ -14,7 +14,7 @@ use yii\helpers\Url;
 /* @var $level string */
 /* @var $status string */
 
-$this->title = 'Level Team';
+$this->title = 'Network';
 $this->params['breadcrumbs'][] = $this->title;
 
 /**
@@ -121,7 +121,7 @@ $levelCounts = calculateLevelCounts($levelTeam);
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-sitemap"></i> Level Team Hierarchy
+                        <i class="fas fa-sitemap"></i> Network
                     </h3>
                 </div>
                 <div class="card-body">
@@ -174,7 +174,7 @@ $levelCounts = calculateLevelCounts($levelTeam);
 
                     <!-- Level Statistics -->
                     <div class="level-stats mb-4">
-                        <h5><i class="fas fa-chart-bar"></i> Level-wise Statistics</h5>
+                        <h5><i class="fas fa-chart-bar"></i>Network Statistics</h5>
                         <div class="row">
                             <?php 
                             // Get all active levels from LevelPlan table
@@ -241,7 +241,7 @@ $levelCounts = calculateLevelCounts($levelTeam);
                     <!-- Team Hierarchy -->
                     <div class="team-hierarchy">
                         <?php if (!empty($levelTeam)): ?>
-                            <h5><i class="fas fa-sitemap"></i> Team Hierarchy</h5>
+                            <h5><i class="fas fa-sitemap"></i> Network</h5>
                             <?php displayLevelTeam($levelTeam); ?>
                         <?php else: ?>
                             <div class="alert alert-info text-center">

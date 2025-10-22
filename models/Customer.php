@@ -1439,4 +1439,82 @@ class Customer extends BaseCustomer
     {
         return \app\models\Currency::getCurrencyOptions();
     }
+
+    /**
+     * Get customer's currency for display
+     * @return array ['code' => string, 'symbol' => string, 'decimal_places' => int]
+     */
+    public function getCurrencyForDisplay()
+    {
+        $currency = $this->getPreferredCurrency();
+        
+        if ($currency) {
+            return [
+                'code' => $currency->code,
+                'symbol' => $currency->symbol,
+                'decimal_places' => $currency->decimal_places,
+                'name' => $currency->name
+            ];
+        }
+        
+        // Fallback to INR if no currency set
+        return [
+            'code' => 'INR',
+            'symbol' => '₹',
+            'decimal_places' => 2,
+            'name' => 'Indian Rupee'
+        ];
+    }
+
+    /**
+     * Format amount using customer's preferred currency
+     * @param float $amount
+     * @param bool $showCode
+     * @return string
+     */
+    public function formatCurrencyAmount($amount, $showCode = false)
+    {
+        $currency = $this->getCurrencyForDisplay();
+        $formattedAmount = number_format($amount, $currency['decimal_places']);
+        
+        if ($showCode) {
+            return $currency['symbol'] . $formattedAmount . ' ' . $currency['code'];
+        }
+        
+        return $currency['symbol'] . $formattedAmount;
+    }
+
+    /**
+     * Convert amount from INR to customer's preferred currency
+     * @param float $amountInInr
+     * @return float
+     */
+    public function convertFromInr($amountInInr)
+    {
+        $currency = $this->getPreferredCurrency();
+        
+        if (!$currency || $currency->code === 'INR') {
+            return $amountInInr;
+        }
+        
+        // Convert from INR (base) to customer's currency
+        return $currency->convertFromBase($amountInInr);
+    }
+
+    /**
+     * Convert amount from customer's preferred currency to INR
+     * @param float $amount
+     * @return float
+     */
+    public function convertToInr($amount)
+    {
+        $currency = $this->getPreferredCurrency();
+        
+        if (!$currency || $currency->code === 'INR') {
+            return $amount;
+        }
+        
+        // Convert from customer's currency to INR (base)
+        return $currency->convertToBase($amount);
+    }
 }

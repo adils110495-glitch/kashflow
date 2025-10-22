@@ -12,6 +12,11 @@ use app\models\Ledger;
 
 $this->title = 'Withdrawal';
 $this->params['breadcrumbs'][] = $this->title;
+
+// Get customer's currency information
+$customerCurrency = $customer->getCurrencyForDisplay();
+$minWithdrawalInCustomerCurrency = $customer->convertFromInr(\app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT);
+$currentBalanceInCustomerCurrency = $customer->convertFromInr($currentBalance);
 ?>
 
 <div class="pcoded-content">
@@ -35,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($customer->getTotalIncome(), 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->getTotalIncome())) ?></h4>
                                             <h6 class="text-white m-b-0">Total Income</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -51,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($customer->getTotalWithdrawals(), 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->getTotalWithdrawals())) ?></h4>
                                             <h6 class="text-white m-b-0">Total Withdrawals</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -67,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <div class="col-8">
-                                            <h4 class="text-white">$<?= number_format($currentBalance, 2) ?></h4>
+                                            <h4 class="text-white"><?= $customer->formatCurrencyAmount($currentBalanceInCustomerCurrency) ?></h4>
                                             <h6 class="text-white m-b-0">Available Balance</h6>
                                         </div>
                                         <div class="col-4 text-right">
@@ -92,16 +97,16 @@ $this->params['breadcrumbs'][] = $this->title;
                                             <div class="balance-breakdown">
                                                 <div class="breakdown-item">
                                                     <span class="label">Total Income:</span>
-                                                    <span class="value text-success">+$<?= number_format($customer->getTotalIncome(), 2) ?></span>
+                                                    <span class="value text-success">+<?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->getTotalIncome())) ?></span>
                                                 </div>
                                                 <div class="breakdown-item">
                                                     <span class="label">Total Withdrawals:</span>
-                                                    <span class="value text-danger">-$<?= number_format($customer->getTotalWithdrawals(), 2) ?></span>
+                                                    <span class="value text-danger">-<?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->getTotalWithdrawals())) ?></span>
                                                 </div>
                                                 <hr>
                                                 <div class="breakdown-item total">
                                                     <span class="label"><strong>Available Balance:</strong></span>
-                                                    <span class="value text-primary"><strong>$<?= number_format($currentBalance, 2) ?></strong></span>
+                                                    <span class="value text-primary"><strong><?= $customer->formatCurrencyAmount($currentBalanceInCustomerCurrency) ?></strong></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -112,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                     <code>Available Balance = Total Income - Total Withdrawals</code>
                                                 </div>
                                                 <div class="formula-calculation">
-                                                    <code>$<?= number_format($currentBalance, 2) ?> = $<?= number_format($customer->getTotalIncome(), 2) ?> - $<?= number_format($customer->getTotalWithdrawals(), 2) ?></code>
+                                                    <code><?= $customer->formatCurrencyAmount($currentBalanceInCustomerCurrency) ?> = <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->getTotalIncome())) ?> - <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->getTotalWithdrawals())) ?></code>
                                                 </div>
                                             </div>
                                         </div>
@@ -155,19 +160,19 @@ $this->params['breadcrumbs'][] = $this->title;
                                             <?= Html::label('Withdrawal Amount', 'amount', ['class' => 'form-label']) ?>
                                             <div class="input-group">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">₹</span>
+                    <span class="input-group-text"><?= Html::encode($customerCurrency['symbol']) ?></span>
                 </div>
                                                 <?= Html::input('number', 'amount', '', [
                                                     'class' => 'form-control',
                                                     'step' => '0.01',
-                                                    'min' => \app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT,
-                                                    'max' => $currentBalance,
+                                                    'min' => $minWithdrawalInCustomerCurrency,
+                                                    'max' => $currentBalanceInCustomerCurrency,
                                                     'required' => true,
-                                                    'placeholder' => 'Enter withdrawal amount (minimum ₹' . \app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT . ')'
+                                                    'placeholder' => 'Enter withdrawal amount (minimum ' . $customerCurrency['symbol'] . number_format($minWithdrawalInCustomerCurrency, $customerCurrency['decimal_places']) . ')'
                                                 ]) ?>
                                             </div>
                                             <small class="form-text text-muted">
-                                                Minimum withdrawal: ₹<?= number_format(\app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT, 2) ?> | Maximum withdrawal: ₹<?= number_format($currentBalance, 2) ?>
+                                                Minimum withdrawal: <?= $customer->formatCurrencyAmount($minWithdrawalInCustomerCurrency) ?> | Maximum withdrawal: <?= $customer->formatCurrencyAmount($currentBalanceInCustomerCurrency) ?>
                                             </small>
                                         </div>
 
@@ -267,7 +272,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <div class="info-box-content">
                                             <span class="info-box-text">Minimum Amount</span>
 
-                                            <span class="info-box-number">₹<?= number_format(\app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT, 2) ?></span>
+                                            <span class="info-box-number"><?= $customer->formatCurrencyAmount($minWithdrawalInCustomerCurrency) ?></span>
                                         </div>
                                     </div>
 
@@ -275,7 +280,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <span class="info-box-icon bg-warning"><i class="feather icon-dollar-sign"></i></span>
                                         <div class="info-box-content">
                                             <span class="info-box-text">Daily Limit</span>
-                                            <span class="info-box-number">$1,000.00</span>
+                                            <span class="info-box-number"><?= $customer->formatCurrencyAmount($customer->convertFromInr(1000)) ?></span>
                                         </div>
                                     </div>
 
@@ -322,7 +327,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                         <tr>
                                                             <td><?= Html::encode($withdrawal->getFormattedDate()) ?></td>
                 <td>
-                    <strong class="text-danger">-₹<?= number_format($withdrawal->amount, 2) ?></strong>
+                    <strong class="text-danger">-<?= $customer->formatCurrencyAmount($customer->convertFromInr($withdrawal->amount)) ?></strong>
                 </td>
                                                             <td>
                                                                 <?= $withdrawal->getWithdrawalMethodLabel() ?>
@@ -514,12 +519,12 @@ $this->params['breadcrumbs'][] = $this->title;
 // Amount validation
 document.querySelector('input[name="amount"]').addEventListener('input', function() {
     var amount = parseFloat(this.value);
-    var maxAmount = <?= $currentBalance ?>;
+    var maxAmount = <?= $currentBalanceInCustomerCurrency ?>;
     
     if (amount > maxAmount) {
         this.setCustomValidity('Amount cannot exceed available balance');
-    } else if (amount < 10) {
-        this.setCustomValidity('Minimum withdrawal amount is $10.00');
+    } else if (amount < <?= $minWithdrawalInCustomerCurrency ?>) {
+        this.setCustomValidity('Minimum withdrawal amount is <?= $customer->formatCurrencyAmount($minWithdrawalInCustomerCurrency) ?>');
     } else {
         this.setCustomValidity('');
     }

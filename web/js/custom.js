@@ -824,23 +824,95 @@ $(document).ready(function() {
     // WhatsApp share functionality
     $(document).on('click', '#whatsapp-share-link', function(e) {
         e.preventDefault();
-        var link = $(this).data('link');
+        e.stopPropagation();
+        
+        var $this = $(this);
+        var originalIcon = $this.find('i').attr('class');
+        
+        // Add loading state
+        $this.find('i').attr('class', 'fas fa-spinner fa-spin');
+        $this.css('pointer-events', 'none');
+        
+        var link = $this.data('link');
+        if (!link) {
+            console.error('WhatsApp share: No link found');
+            alert('No referral link available');
+            // Restore original state
+            $this.find('i').attr('class', originalIcon);
+            $this.css('pointer-events', 'auto');
+            return;
+        }
+        
         var message = 'Join me on KashFlow! Use my referral link to register: ' + link;
-        var whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(message);
+        
+        // Use different WhatsApp URL formats for better compatibility
+        var whatsappUrl;
+        var userAgent = navigator.userAgent.toLowerCase();
+        
+        if (userAgent.includes('android') || userAgent.includes('mobile')) {
+            // For mobile devices, use WhatsApp app URL
+            whatsappUrl = 'whatsapp://send?text=' + encodeURIComponent(message);
+        } else {
+            // For desktop, use WhatsApp Web
+            whatsappUrl = 'https://web.whatsapp.com/send?text=' + encodeURIComponent(message);
+        }
         
         // Debug: Log the WhatsApp URL
         console.log('Opening WhatsApp with URL:', whatsappUrl);
+        console.log('Original link:', link);
         
-        // Open WhatsApp in a new window/tab
-        var newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-        
-        // Check if popup was blocked
-        if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-            // Popup was blocked, try alternative method
-            console.log('Popup blocked, trying alternative method');
+        // Try to open WhatsApp Web/App
+        try {
+            // First try opening in a new window
+            var newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            
+            // Check if popup was blocked
+            if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                // Popup was blocked, try alternative method
+                console.log('Popup blocked, trying alternative method');
+                
+                // Try different WhatsApp URL formats
+                var alternativeUrls = [
+                    'https://wa.me/?text=' + encodeURIComponent(message),
+                    'https://api.whatsapp.com/send?text=' + encodeURIComponent(message),
+                    'whatsapp://send?text=' + encodeURIComponent(message)
+                ];
+                
+                var success = false;
+                for (var i = 0; i < alternativeUrls.length; i++) {
+                    try {
+                        var tempLink = document.createElement('a');
+                        tempLink.href = alternativeUrls[i];
+                        tempLink.target = '_blank';
+                        tempLink.rel = 'noopener noreferrer';
+                        document.body.appendChild(tempLink);
+                        tempLink.click();
+                        document.body.removeChild(tempLink);
+                        success = true;
+                        console.log('WhatsApp opened with alternative URL:', alternativeUrls[i]);
+                        break;
+                    } catch (e) {
+                        console.log('Alternative URL failed:', alternativeUrls[i], e);
+                    }
+                }
+                
+                if (!success) {
+                    // Final fallback: redirect in same window
+                    window.location.href = whatsappUrl;
+                }
+            } else {
+                console.log('WhatsApp opened successfully in new tab');
+            }
+        } catch (error) {
+            console.error('WhatsApp share error:', error);
+            // Fallback: redirect in same window
             window.location.href = whatsappUrl;
-        } else {
-            console.log('WhatsApp opened successfully in new tab');
         }
+        
+        // Restore original state after a short delay
+        setTimeout(function() {
+            $this.find('i').attr('class', originalIcon);
+            $this.css('pointer-events', 'auto');
+        }, 1000);
     });
 });

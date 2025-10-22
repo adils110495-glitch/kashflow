@@ -344,20 +344,25 @@ class CustomerDashboardController extends Controller
             $withdrawalMethod = Yii::$app->request->post('withdrawal_method');
             $accountDetails = Yii::$app->request->post('account_details');
             
+            // Convert amount from customer's currency to INR for storage
+            $amountInInr = $customer->convertToInr($amount);
+            $minWithdrawalInCustomerCurrency = $customer->convertFromInr(\app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT);
+            $currentBalanceInCustomerCurrency = $customer->convertFromInr($currentBalance);
+            
             // Validate withdrawal request
             if (empty($amount) || $amount <= 0) {
                 Yii::$app->session->setFlash('error', 'Please enter a valid withdrawal amount.');
-            } elseif ($amount < \app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT) {
-                Yii::$app->session->setFlash('error', 'Minimum withdrawal amount is ₹' . number_format(\app\models\Withdrawal::MIN_WITHDRAWAL_AMOUNT, 2) . '.');
-            } elseif ($amount > $currentBalance) {
+            } elseif ($amount < $minWithdrawalInCustomerCurrency) {
+                Yii::$app->session->setFlash('error', 'Minimum withdrawal amount is ' . $customer->formatCurrencyAmount($minWithdrawalInCustomerCurrency) . '.');
+            } elseif ($amount > $currentBalanceInCustomerCurrency) {
                 Yii::$app->session->setFlash('error', 'Insufficient balance for withdrawal.');
             } elseif (empty($withdrawalMethod)) {
                 Yii::$app->session->setFlash('error', 'Please select a withdrawal method.');
             } elseif (empty($accountDetails)) {
                 Yii::$app->session->setFlash('error', 'Please provide account details.');
             } else {
-                // Create withdrawal request
-                $result = $this->processWithdrawalRequest($customer, $amount, $withdrawalMethod, $accountDetails);
+                // Create withdrawal request using INR amount for storage
+                $result = $this->processWithdrawalRequest($customer, $amountInInr, $withdrawalMethod, $accountDetails);
                 
                 if ($result['success']) {
                     Yii::$app->session->setFlash('success', $result['message']);
@@ -404,7 +409,7 @@ class CustomerDashboardController extends Controller
             }
             
             // Log activity
-            $customer->logActivity('withdrawal_request', "Withdrawal request of ₹" . number_format($amount, 2) . " via " . $withdrawalMethod, [
+            $customer->logActivity('withdrawal_request', "Withdrawal request of " . $customer->formatCurrencyAmount($amount) . " via " . $withdrawalMethod, [
                 'amount' => $amount,
                 'withdrawal_method' => $withdrawalMethod,
                 'account_details' => $accountDetails,
@@ -614,6 +619,9 @@ class CustomerDashboardController extends Controller
             $fundRequest->load(Yii::$app->request->post());
             $fundRequest->customer_id = $customer->id;
             $fundRequest->request_date = date('Y-m-d');
+            
+            // Convert amount from customer's currency to INR for storage
+            $fundRequest->amount = $customer->convertToInr($fundRequest->amount);
 
             // Handle file uploads
             $uploadedFile = \yii\web\UploadedFile::getInstance($fundRequest, 'attachment_file');
@@ -907,6 +915,9 @@ class CustomerDashboardController extends Controller
             $fundTransfer->transfer_date = date('Y-m-d');
             $fundTransfer->transfer_type = \app\models\FundTransfer::TYPE_CUSTOMER_TO_CUSTOMER;
             $fundTransfer->status = \app\models\FundTransfer::STATUS_PENDING;
+            
+            // Convert amount from customer's currency to INR for storage
+            $fundTransfer->amount = $customer->convertToInr($fundTransfer->amount);
 
             // Validate sufficient balance
             if (!\app\models\FundTransfer::hasSufficientBalance($customer->id, $fundTransfer->amount)) {

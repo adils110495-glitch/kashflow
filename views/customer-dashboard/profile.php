@@ -9,6 +9,9 @@ use app\models\Customer;
 $this->title = 'Profile';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+// Get customer's currency information
+$customerCurrency = $customer->getCurrencyForDisplay();
 ?>
 
 <div class="customer-profile">
@@ -54,6 +57,27 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div class="form-group">
                                 <label class="form-label"><strong>Country</strong></label>
                                 <p class="form-control-static"><?= Html::encode($customer->country->name ?? 'Not specified') ?></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><strong>Preferred Currency</strong></label>
+                                <p class="form-control-static">
+                                    <span class="badge badge-info">
+                                        <?= Html::encode($customerCurrency['symbol']) ?> <?= Html::encode($customerCurrency['name']) ?>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label"><strong>KYC Status</strong></label>
+                                <p class="form-control-static">
+                                    <?= $customer->getKycStatusBadge() ?>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -111,12 +135,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div class="package-details">
                                 <div class="detail-item">
                                     <span class="label">Amount:</span>
-                                    <span class="value">$<?= number_format($customer->currentPackage->amount, 2) ?></span>
+                                    <span class="value"><?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->amount)) ?></span>
                                 </div>
                                 
                                 <div class="detail-item">
                                     <span class="label">Fee:</span>
-                                    <span class="value">$<?= number_format($customer->currentPackage->fee, 2) ?></span>
+                                    <span class="value"><?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->fee)) ?></span>
                                 </div>
                                 
                                 <div class="detail-item">
@@ -158,6 +182,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= Html::button('<i class="fas fa-arrow-up"></i> Upgrade Package', ['class' => 'btn btn-success btn-sm mb-2 upgrade-package-btn']) ?>
                         <?php endif; ?>
                         <?= Html::a('<i class="fas fa-edit"></i> Update Profile', ['/user/settings/profile'], ['class' => 'btn btn-outline-info btn-sm mb-2']) ?>
+                        <?= Html::a('<i class="fas fa-shield-alt"></i> KYC Profile', ['/customer-dashboard/kyc'], ['class' => 'btn btn-outline-primary btn-sm mb-2']) ?>
                         <?= Html::a('<i class="fas fa-key"></i> Change Password', ['/user/settings/account'], ['class' => 'btn btn-outline-warning btn-sm mb-2']) ?>
                         <?= Html::a('<i class="fas fa-envelope"></i> Contact Support', ['/customer-dashboard/tickets'], ['class' => 'btn btn-outline-secondary btn-sm']) ?>
                     </div>

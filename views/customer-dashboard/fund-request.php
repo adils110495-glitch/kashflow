@@ -11,6 +11,9 @@ use yii\helpers\Url;
 
 $this->title = 'Fund Request';
 $this->params['breadcrumbs'][] = $this->title;
+
+// Get customer's currency information
+$customerCurrency = $customer->getCurrencyForDisplay();
 ?>
 
 <div class="customer-dashboard-fund-request">
@@ -46,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'step' => '0.01',
                                 'min' => '0.01',
                                 'placeholder' => 'Enter amount'
-                            ])->label('Request Amount ($)') ?>
+                            ])->label('Request Amount (' . $customerCurrency['symbol'] . ')') ?>
                         </div>
                         <div class="col-md-6">
                             <?= $form->field($fundRequest, 'attachment_file')->fileInput([
@@ -104,7 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <tr>
                                             <td><?= Html::encode($request->getFormattedRequestDate()) ?></td>
                                             <td>
-                                                <strong class="text-success"><?= Html::encode($request->getFormattedAmount()) ?></strong>
+                                                <strong class="text-success"><?= $customer->formatCurrencyAmount($customer->convertFromInr($request->amount)) ?></strong>
                                             </td>
                                             <td>
                                                 <?php
