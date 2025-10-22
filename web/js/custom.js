@@ -257,26 +257,6 @@ $(document).ready(function() {
         }
     };
     
-    // Mobile menu toggle for customer dashboard
-    const mobileToggle = document.getElementById('mobile-collapse1');
-    const sidebar = document.querySelector('.pcoded-navbar');
-    const mainContainer = document.querySelector('.pcoded-main-container');
-    
-    if (mobileToggle && sidebar) {
-        mobileToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            sidebar.classList.toggle('mob-open');
-        });
-    }
-    
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (sidebar && sidebar.classList.contains('mob-open')) {
-            if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
-                sidebar.classList.remove('mob-open');
-            }
-        }
-    });
     
     // Auto-hide alerts after 5 seconds
     setTimeout(function() {
@@ -708,4 +688,159 @@ $(document).ready(function() {
             $(this).remove();
         });
     }
+    
+    // Copy and WhatsApp functionality for customer topbar
+    // Copy registration link functionality
+    $(document).on('click', '#copy-registration-link', function(e) {
+        e.preventDefault();
+        var link = $(this).data('link');
+        var $this = $(this);
+        
+        // Get mouse cursor position
+        var mouseX = e.clientX;
+        var mouseY = e.clientY;
+        
+        // Debug: Log the link to console
+        console.log('Copying registration link:', link);
+        
+        // Copy to clipboard
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(link).then(function() {
+                showCopyToastAtCursor(mouseX, mouseY, 'Copied!', 'success');
+                console.log('Successfully copied:', link);
+            }).catch(function(err) {
+                console.error('Clipboard API failed:', err);
+                fallbackCopy(link, mouseX, mouseY);
+            });
+        } else {
+            fallbackCopy(link, mouseX, mouseY);
+        }
+        
+        function fallbackCopy(text, cursorX, cursorY) {
+            // Create a temporary input element
+            var tempInput = document.createElement('input');
+            tempInput.style.position = 'absolute';
+            tempInput.style.left = '-9999px';
+            tempInput.style.opacity = '0';
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            
+            // Select and copy the text
+            tempInput.focus();
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                var successful = document.execCommand('copy');
+                if (successful) {
+                    showCopyToastAtCursor(cursorX, cursorY, 'Copied!', 'success');
+                    console.log('Successfully copied:', text);
+                } else {
+                    showCopyToastAtCursor(cursorX, cursorY, 'Failed to copy', 'error');
+                    console.log('Copy failed');
+                }
+            } catch (err) {
+                showCopyToastAtCursor(cursorX, cursorY, 'Failed to copy', 'error');
+                console.error('Copy error:', err);
+            }
+            
+            // Remove the temporary input
+            document.body.removeChild(tempInput);
+        }
+    });
+    
+    // Function to show copy toast at cursor position
+    function showCopyToastAtCursor(cursorX, cursorY, message, type) {
+        // Create toast element
+        var toast = $('<div class="copy-toast copy-toast-' + type + '">' + message + '</div>');
+        
+        // Position toast near the cursor (slightly offset to avoid covering cursor)
+        var toastTop = cursorY - 40; // Above the cursor
+        var toastLeft = cursorX - 30; // Slightly left of cursor
+        
+        // Ensure toast stays within viewport
+        var windowWidth = $(window).width();
+        var windowHeight = $(window).height();
+        
+        // Adjust horizontal position if too far right
+        if (toastLeft + 60 > windowWidth) {
+            toastLeft = windowWidth - 70;
+        }
+        
+        // Adjust horizontal position if too far left
+        if (toastLeft < 10) {
+            toastLeft = 10;
+        }
+        
+        // Adjust vertical position if too high
+        if (toastTop < 10) {
+            toastTop = cursorY + 20; // Below cursor instead
+        }
+        
+        // Add styles
+        toast.css({
+            'position': 'fixed',
+            'top': toastTop + 'px',
+            'left': toastLeft + 'px',
+            'background': type === 'success' ? '#28a745' : '#dc3545',
+            'color': 'white',
+            'padding': '8px 12px',
+            'border-radius': '6px',
+            'font-size': '12px',
+            'font-weight': '500',
+            'z-index': '9999',
+            'box-shadow': '0 4px 12px rgba(0,0,0,0.3)',
+            'opacity': '0',
+            'transform': 'translateY(10px) scale(0.9)',
+            'transition': 'all 0.3s ease',
+            'pointer-events': 'none',
+            'white-space': 'nowrap',
+            'border': '1px solid rgba(255, 255, 255, 0.2)'
+        });
+        
+        // Add to page
+        $('body').append(toast);
+        
+        // Animate in
+        setTimeout(function() {
+            toast.css({
+                'opacity': '1',
+                'transform': 'translateY(0) scale(1)'
+            });
+        }, 10);
+        
+        // Remove after 2 seconds
+        setTimeout(function() {
+            toast.css({
+                'opacity': '0',
+                'transform': 'translateY(-10px) scale(0.9)'
+            });
+            setTimeout(function() {
+                toast.remove();
+            }, 300);
+        }, 2000);
+    }
+    
+    // WhatsApp share functionality
+    $(document).on('click', '#whatsapp-share-link', function(e) {
+        e.preventDefault();
+        var link = $(this).data('link');
+        var message = 'Join me on KashFlow! Use my referral link to register: ' + link;
+        var whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(message);
+        
+        // Debug: Log the WhatsApp URL
+        console.log('Opening WhatsApp with URL:', whatsappUrl);
+        
+        // Open WhatsApp in a new window/tab
+        var newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        
+        // Check if popup was blocked
+        if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+            // Popup was blocked, try alternative method
+            console.log('Popup blocked, trying alternative method');
+            window.location.href = whatsappUrl;
+        } else {
+            console.log('WhatsApp opened successfully in new tab');
+        }
+    });
 });

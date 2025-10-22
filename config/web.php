@@ -109,6 +109,19 @@ $config = [
                 'customer' => 'customer/index',
                 'customer/<action:\w+>' => 'customer/<action>',
                 'customer/<action:\w+>/<id:\d+>' => 'customer/<action>',
+                
+                // Fund Request routes
+                'fund-request' => 'fund-request/index',
+                'fund-request/<action:\w+>' => 'fund-request/<action>',
+                'fund-request/<action:\w+>/<id:\d+>' => 'fund-request/<action>',
+                
+            // Fund Transfer routes
+            'fund-transfer' => 'fund-transfer/index',
+            'fund-transfer/<action:\w+>' => 'fund-transfer/<action>',
+            'fund-transfer/<action:\w+>/<id:\d+>' => 'fund-transfer/<action>',
+            
+            // Customer Fund Transfer Approval routes
+            'fund-transfer-approval/<id:\d+>' => 'customer-dashboard/fund-transfer-approval',
             ],
         ],
         'view' => [

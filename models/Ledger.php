@@ -30,6 +30,8 @@ class Ledger extends BaseLedger
     const TYPE_WITHDRAWAL = 2;
     const TYPE_TOPUP_REFUND = 3;
     const TYPE_WITHDRAWAL_REFUND = 4;
+    const TYPE_TRANSFER_OUT = 5;
+    const TYPE_TRANSFER_IN = 6;
 
     // Status constants
     const STATUS_INACTIVE = 0;
@@ -42,7 +44,7 @@ class Ledger extends BaseLedger
     {
         $rules = parent::rules();
         // Override parent rules to use constants
-        $rules[] = [['type'], 'in', 'range' => [self::TYPE_TOPUP, self::TYPE_WITHDRAWAL, self::TYPE_TOPUP_REFUND, self::TYPE_WITHDRAWAL_REFUND]];
+        $rules[] = [['type'], 'in', 'range' => [self::TYPE_TOPUP, self::TYPE_WITHDRAWAL, self::TYPE_TOPUP_REFUND, self::TYPE_WITHDRAWAL_REFUND, self::TYPE_TRANSFER_OUT, self::TYPE_TRANSFER_IN]];
         $rules[] = [['status'], 'in', 'range' => [self::STATUS_INACTIVE, self::STATUS_ACTIVE]];
         return $rules;
     }
@@ -58,6 +60,8 @@ class Ledger extends BaseLedger
             self::TYPE_WITHDRAWAL => '<span class="label label-warning">Withdrawal</span>',
             self::TYPE_TOPUP_REFUND => '<span class="label label-success">Topup Refund</span>',
             self::TYPE_WITHDRAWAL_REFUND => '<span class="label label-info">Withdrawal Refund</span>',
+            self::TYPE_TRANSFER_OUT => '<span class="label label-danger">Transfer Out</span>',
+            self::TYPE_TRANSFER_IN => '<span class="label label-primary">Transfer In</span>',
         ];
         
         return $typeLabels[$this->type] ?? '<span class="label label-info">' . $this->getTypeText() . '</span>';

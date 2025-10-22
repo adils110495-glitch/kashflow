@@ -9,7 +9,7 @@ use app\widgets\ActivityNotificationWidget;
 // Get current customer data
 $customer = Customer::find()
     ->where(['user_id' => Yii::$app->user->id])
-    ->with(['currentPackage'])
+    ->with(['currentPackage', 'user'])
     ->one();
 ?>
 
@@ -31,8 +31,9 @@ $customer = Customer::find()
             <!-- Notification -->
             <li class="nav-item">
                 <div class="dropdown drp-user">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="display: flex; align-items: center;">
-                        <span class="badge badge-warning" style="display: flex; align-items: center;"><i class="feather icon-bell"></i> New Updates</span>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="feather icon-bell"></i>
+                        <span class="badge">5</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-notification">
                         <div class="pro-head">
@@ -57,7 +58,29 @@ $customer = Customer::find()
                     'refreshInterval' => 30000 // 30 seconds
                 ]) ?>
             </li>
-            
+
+            <!-- Copy Icon -->
+            <?php if ($customer): ?>
+            <?php 
+            $referralCode = $customer->user ? $customer->user->username : 'KF' . str_pad($customer->id, 6, '0', STR_PAD_LEFT);
+            $registrationLink = Url::to(['/user/registration/register', 'ref' => $referralCode], true);
+            ?>
+            <li class="nav-item">
+                <a href="#" id="copy-registration-link" data-link="<?= $registrationLink ?>" title="Copy registration link: <?= $registrationLink ?>">
+                    <i class="fas fa-copy"></i>
+                </a>
+            </li>
+            <?php endif; ?>
+
+            <!-- WhatsApp Icon -->
+            <?php if ($customer): ?>
+            <li class="nav-item">
+                <a href="#" id="whatsapp-share-link" data-link="<?= $registrationLink ?>" title="Share registration link on WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </li>
+            <?php endif; ?>
+
             <!-- User Profile Dropdown -->
             <li class="nav-item">
                 <div class="dropdown drp-user">
@@ -84,6 +107,7 @@ $customer = Customer::find()
                         </div>
                         <ul class="pro-body">
                             <li><a href="<?= Url::to(['/customer-dashboard/profile']) ?>" class="dropdown-item"><i class="feather icon-user"></i> Profile</a></li>
+                            <li><a href="<?= Url::to(['/customer-dashboard/kyc']) ?>" class="dropdown-item"><i class="feather icon-shield"></i> KYC Profile</a></li>
                             <li><a href="#" class="dropdown-item"><i class="feather icon-settings"></i> Settings</a></li>
                             <li><a href="#" class="dropdown-item"><i class="feather icon-package"></i> My Package</a></li>
                             <li><a href="#" class="dropdown-item"><i class="feather icon-credit-card"></i> Billing</a></li>
@@ -102,3 +126,75 @@ $customer = Customer::find()
         </ul>
     </div>
 </header>
+
+<!-- Copy and WhatsApp functionality is handled in custom.js -->
+
+<style>
+/* Copy and WhatsApp icons styling */
+#copy-registration-link,
+#whatsapp-share-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+#copy-registration-link:hover,
+#whatsapp-share-link:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+#copy-registration-link i {
+    color: #17a2b8 !important;
+}
+
+#whatsapp-share-link i {
+    color: #25D366 !important;
+}
+</style>
+
+<script>
+// Copy and WhatsApp functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');
+    
+    // Copy functionality
+    const copyBtn = document.getElementById('copy-registration-link');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Copy button clicked');
+            const link = this.getAttribute('data-link');
+            console.log('Link to copy:', link);
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(link).then(function() {
+                alert('Copied!');
+            }).catch(function() {
+                alert('Copy failed');
+            });
+        });
+    }
+    
+    // WhatsApp functionality
+    const whatsappBtn = document.getElementById('whatsapp-share-link');
+    if (whatsappBtn) {
+        whatsappBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('WhatsApp button clicked');
+            const link = this.getAttribute('data-link');
+            const message = 'Join me on KashFlow! Use my referral link to register: ' + link;
+            const whatsappUrl = 'https://wa.me/?text=' + encodeURIComponent(message);
+            console.log('WhatsApp URL:', whatsappUrl);
+            window.open(whatsappUrl, '_blank');
+        });
+    }
+});
+</script>

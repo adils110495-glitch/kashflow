@@ -56,11 +56,13 @@ abstract class Withdrawal extends \yii\db\ActiveRecord
     {
         $parentRules = parent::rules();
         return ArrayHelper::merge($parentRules, [
-            [['customer_id', 'date', 'amount', 'action_by'], 'required'],
+            [['customer_id', 'date', 'amount', 'withdrawal_method', 'action_by'], 'required'],
             [['customer_id', 'status', 'action_by'], 'integer'],
             [['date', 'action_date_time'], 'safe'],
-            [['amount'], 'number', 'min' => 0.01],
+            [['amount'], 'number', 'min' => 500],
             [['comment'], 'string'],
+            [['withdrawal_method'], 'string', 'max' => 20],
+            [['withdrawal_method'], 'in', 'range' => ['UPI', 'Cash', 'Crypto']],
             [['status'], 'in', 'range' => [0, 1, 2, 3, 4]],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Customer::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['action_by'], 'exist', 'skipOnError' => true, 'targetClass' => \dektrium\user\models\User::class, 'targetAttribute' => ['action_by' => 'id']],
@@ -77,6 +79,7 @@ abstract class Withdrawal extends \yii\db\ActiveRecord
             'customer_id' => 'Customer',
             'date' => 'Date',
             'amount' => 'Amount',
+            'withdrawal_method' => 'Withdrawal Method',
             'status' => 'Status',
             'comment' => 'Comment',
             'action_by' => 'Action By',

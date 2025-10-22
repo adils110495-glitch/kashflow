@@ -74,6 +74,25 @@ use yii\helpers\Html;
 							<li><a href="<?= \yii\helpers\Url::to(['/admin/pending-withdrawals']) ?>">Pending Requests</a></li>
 						</ul>
 					</li>
+					<li class="nav-item pcoded-hasmenu <?= Yii::$app->controller->id === 'fund-request' ? 'pcoded-trigger' : '' ?>">
+						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-plus-circle"></i></span><span class="pcoded-mtext">Fund Requests</span></a>
+						<ul class="pcoded-submenu">
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-request/index']) ?>">All Fund Requests</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-request/index', 'status' => '0']) ?>">Pending Requests</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-request/index', 'status' => '1']) ?>">Approved Requests</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-request/index', 'status' => '2']) ?>">Rejected Requests</a></li>
+						</ul>
+					</li>
+					<li class="nav-item pcoded-hasmenu <?= Yii::$app->controller->id === 'fund-transfer' ? 'pcoded-trigger' : '' ?>">
+						<a href="#!" class="nav-link "><span class="pcoded-micon"><i class="feather icon-repeat"></i></span><span class="pcoded-mtext">Fund Transfers</span></a>
+						<ul class="pcoded-submenu">
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-transfer/index']) ?>">All Transfers</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-transfer/index', 'status' => '0']) ?>">Pending Transfers</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-transfer/index', 'status' => '1']) ?>">Approved Transfers</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-transfer/index', 'status' => '2']) ?>">Rejected Transfers</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/fund-transfer/create']) ?>">Create Transfer</a></li>
+						</ul>
+					</li>
 					<li class="nav-item pcoded-menu-caption">
 						<label>Complain & Support</label>
 					</li>

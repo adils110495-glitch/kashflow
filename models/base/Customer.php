@@ -18,6 +18,23 @@ use yii\behaviors\TimestampBehavior;
  * @property int $country_id
  * @property int|null $current_package
  * @property int $status
+ * @property string|null $crypto_wallet_address
+ * @property string|null $upi_id
+ * @property string|null $qr_code_image
+ * @property string|null $aadhar_number
+ * @property string|null $aadhar_card_image
+ * @property string|null $pan_number
+ * @property string|null $pan_card_image
+ * @property string|null $bank_account_number
+ * @property string|null $bank_account_holder_name
+ * @property string|null $bank_name
+ * @property string|null $bank_ifsc_code
+ * @property string|null $bank_branch_name
+ * @property string|null $bank_account_type
+ * @property int|null $currency_id
+ * @property int $kyc_status
+ * @property string|null $kyc_verified_at
+ * @property int|null $kyc_verified_by
  * @property int $created_at
  * @property int $updated_at
  *
@@ -30,6 +47,8 @@ use yii\behaviors\TimestampBehavior;
  * @property \app\models\Income[] $incomes
  * @property \app\models\Ledger[] $ledgerEntries
  * @property \app\models\Withdrawal[] $withdrawals
+ * @property \dektrium\user\models\User $kycVerifiedBy
+ * @property \app\models\Currency $currency
  */
 class Customer extends ActiveRecord
 {
@@ -58,16 +77,29 @@ class Customer extends ActiveRecord
     {
         return [
             [['user_id', 'name', 'email', 'mobile_no', 'country_id'], 'required'],
-            [['user_id', 'country_id', 'status', 'current_package'], 'integer'],
-            [['name', 'email'], 'string', 'max' => 255],
+            [['user_id', 'country_id', 'status', 'current_package', 'kyc_status', 'kyc_verified_by', 'currency_id'], 'integer'],
+            [['name', 'email', 'crypto_wallet_address', 'qr_code_image', 'aadhar_card_image', 'pan_card_image', 'bank_account_holder_name', 'bank_name', 'bank_branch_name'], 'string', 'max' => 255],
             [['mobile_no'], 'string', 'max' => 20],
             [['referral_code'], 'string', 'max' => 50],
+            [['upi_id'], 'string', 'max' => 100],
+            [['aadhar_number'], 'string', 'max' => 12],
+            [['pan_number'], 'string', 'max' => 10],
+            [['bank_account_number'], 'string', 'max' => 20],
+            [['bank_ifsc_code'], 'string', 'max' => 11],
+            [['bank_account_type'], 'string', 'max' => 20],
             [['email'], 'email'],
             [['email'], 'unique'],
             [['mobile_no'], 'unique'],
+            [['upi_id'], 'unique'],
+            [['aadhar_number'], 'unique'],
+            [['pan_number'], 'unique'],
+            [['bank_account_number'], 'unique'],
             [['status'], 'default', 'value' => 1],
             [['status'], 'in', 'range' => [0, 1]],
+            [['kyc_status'], 'default', 'value' => 0],
+            [['kyc_status'], 'in', 'range' => [0, 1, 2]],
             [['current_package'], 'default', 'value' => 1],
+            [['kyc_verified_at'], 'safe'],
         ];
     }
 
@@ -86,6 +118,23 @@ class Customer extends ActiveRecord
             'country_id' => 'Country',
             'current_package' => 'Current Package',
             'status' => 'Status',
+            'crypto_wallet_address' => 'Crypto Wallet Address',
+            'upi_id' => 'UPI ID',
+            'qr_code_image' => 'QR Code Image',
+            'aadhar_number' => 'Aadhar Card Number',
+            'aadhar_card_image' => 'Aadhar Card Image',
+            'pan_number' => 'PAN Card Number',
+            'pan_card_image' => 'PAN Card Image',
+            'bank_account_number' => 'Bank Account Number',
+            'bank_account_holder_name' => 'Account Holder Name',
+            'bank_name' => 'Bank Name',
+            'bank_ifsc_code' => 'IFSC Code',
+            'bank_branch_name' => 'Branch Name',
+            'bank_account_type' => 'Account Type',
+            'currency_id' => 'Preferred Currency',
+            'kyc_status' => 'KYC Status',
+            'kyc_verified_at' => 'KYC Verified At',
+            'kyc_verified_by' => 'KYC Verified By',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
@@ -195,5 +244,25 @@ class Customer extends ActiveRecord
     public function getWithdrawals()
     {
         return $this->hasMany(\app\models\Withdrawal::class, ['customer_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[KycVerifiedBy]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getKycVerifiedBy()
+    {
+        return $this->hasOne(\dektrium\user\models\User::class, ['id' => 'kyc_verified_by']);
+    }
+
+    /**
+     * Gets query for [[Currency]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrency()
+    {
+        return $this->hasOne(\app\models\Currency::class, ['id' => 'currency_id']);
     }
 }

@@ -31,6 +31,13 @@ $customer = Customer::find()
                         <span class="pcoded-mtext">My Profile</span>
                     </a>
                 </li>
+                
+                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'kyc' ? 'active' : '' ?>">
+                    <a href="<?= Url::to(['/customer-dashboard/kyc']) ?>" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-shield"></i></span>
+                        <span class="pcoded-mtext">KYC Profile</span>
+                    </a>
+                </li>
                 <!-- Team Section -->
                 <li class="nav-item pcoded-menu-caption">
                     <label>Team & Income</label>
@@ -87,6 +94,20 @@ $customer = Customer::find()
                     <a href="<?= Url::to(['/customer-dashboard/withdrawal']) ?>" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-minus-circle"></i></span>
                         <span class="pcoded-mtext">Withdrawal</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'fund-request' ? 'active' : '' ?>">
+                    <a href="<?= Url::to(['/customer-dashboard/fund-request']) ?>" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-plus-circle"></i></span>
+                        <span class="pcoded-mtext">Fund Request</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item <?= Yii::$app->controller->id === 'customer-dashboard' && Yii::$app->controller->action->id === 'fund-transfer' ? 'active' : '' ?>">
+                    <a href="<?= Url::to(['/customer-dashboard/fund-transfer']) ?>" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-repeat"></i></span>
+                        <span class="pcoded-mtext">Fund Transfer</span>
                     </a>
                 </li>
                 
