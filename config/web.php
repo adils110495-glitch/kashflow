@@ -1,5 +1,8 @@
 <?php
 
+// Load .env file
+require __DIR__ . '/../load_env.php';
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
