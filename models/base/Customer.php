@@ -31,6 +31,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $bank_ifsc_code
  * @property string|null $bank_branch_name
  * @property string|null $bank_account_type
+ * @property string|null $balance
  * @property int|null $currency_id
  * @property int $kyc_status
  * @property string|null $kyc_verified_at
@@ -76,9 +77,10 @@ class Customer extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'name', 'email', 'mobile_no', 'country_id'], 'required'],
+            [['user_id', 'name', 'email', 'mobile_no', 'country_id', 'referral_code'], 'required'],
             [['user_id', 'country_id', 'status', 'current_package', 'kyc_status', 'kyc_verified_by', 'currency_id'], 'integer'],
             [['name', 'email', 'crypto_wallet_address', 'qr_code_image', 'aadhar_card_image', 'pan_card_image', 'bank_account_holder_name', 'bank_name', 'bank_branch_name'], 'string', 'max' => 255],
+            [['balance'], 'safe'],
             [['mobile_no'], 'string', 'max' => 20],
             [['referral_code'], 'string', 'max' => 50],
             [['upi_id'], 'string', 'max' => 100],

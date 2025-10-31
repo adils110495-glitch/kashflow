@@ -105,7 +105,7 @@ class RegistrationController extends BaseRegistrationController
         
         if (empty($referralCode)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['valid' => true, 'message' => ''];
+            return ['valid' => false, 'message' => 'Referral code is required.'];
         }
 
         // Check if the referral code exists in the user table as username

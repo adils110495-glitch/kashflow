@@ -304,7 +304,7 @@ $this->registerMetaTag(['name' => 'csrf-token', 'content' => Yii::$app->request-
                             <div class="kashflow-form-column kashflow-form-column-full">
                                 <!-- Referral Code Field -->
                                 <div class="kashflow-field-group">
-                                    <label class="kashflow-label">Referral Code (Optional)</label>
+                                    <label class="kashflow-label">Referral Code <span class="required-asterisk">*</span></label>
                                     <div class="kashflow-input-group">
                                         <div class="kashflow-input-icon">
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -465,4 +465,13 @@ function clearFieldErrorState(field) {
     }
 }
 ', \yii\web\View::POS_READY);
+
+// Add CSS for required asterisk
+$this->registerCss('
+.required-asterisk {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-left: 2px;
+}
+');
 ?>

@@ -39,6 +39,7 @@ use yii\helpers\Html;
 							<li><a href="<?= \yii\helpers\Url::to(['/package/index']) ?>">Package</a></li>
 							<li><a href="<?= \yii\helpers\Url::to(['/roi-plan/configure']) ?>">ROI Plan</a></li>
 							<li><a href="<?= \yii\helpers\Url::to(['/level-plan/index']) ?>">Level Plan</a></li>
+							<li><a href="<?= \yii\helpers\Url::to(['/reward-plan/index']) ?>">Reward Plan</a></li>
 						</ul>
 					</li>
 					<li class="nav-item pcoded-hasmenu">

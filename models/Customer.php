@@ -756,7 +756,7 @@ class Customer extends BaseCustomer
         if (!$targetPackage) {
             return false;
         }
-
+        
         $currentPackage = $customer->getCurrentPackage()->one();
         if (!$currentPackage) {
             return true; // Can upgrade from no package

@@ -33,7 +33,7 @@ class RegistrationForm extends BaseRegistrationForm
             }
         }
         
-        $rules[] = [['name', 'mobile_no', 'country_id'], 'required'];
+        $rules[] = [['name', 'mobile_no', 'country_id', 'referral_code'], 'required'];
         $rules[] = [['name'], 'string', 'max' => 255];
         $rules[] = [['mobile_no'], 'string', 'max' => 20];
         $rules[] = [['referral_code'], 'string', 'max' => 50];
@@ -66,7 +66,7 @@ class RegistrationForm extends BaseRegistrationForm
         $labels['name'] = 'Full Name';
         $labels['mobile_no'] = 'Mobile Number';
         $labels['country_id'] = 'Country';
-        $labels['referral_code'] = 'Referral Code (Optional)';
+        $labels['referral_code'] = 'Referral Code';
         $labels['password_repeat'] = 'Confirm Password';
         
         return $labels;
@@ -99,8 +99,9 @@ class RegistrationForm extends BaseRegistrationForm
      */
     public function validateReferralCode($attribute, $params)
     {
-        // If referral code is empty, it's valid (optional field)
+        // Referral code is now mandatory
         if (empty($this->$attribute)) {
+            $this->addError($attribute, 'Referral code is required.');
             return;
         }
 

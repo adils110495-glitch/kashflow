@@ -681,7 +681,7 @@ html {
     max-width: 400px
 }
 .field-country-select .select2-container{
-    margin-top: 20px;
+    margin-top: 4px;
 }
 .kashflow-header {
     margin-bottom: 20px;
@@ -728,7 +728,7 @@ html {
 }
 
 .kashflow-field-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .kashflow-label {
@@ -1179,7 +1179,7 @@ html {
     }
 }
 .form-group{
-    margin-bottom: 0px;
+    margin-bottom: -15px;
     width: 100%;
 }
 
@@ -1721,4 +1721,8 @@ select:-webkit-autofill:focus {
         opacity: 0;
         transform: translateY(-10px) scale(0.9);
     }
+}
+#register-form-mobile_no{
+    padding-top:0px;
+    padding-left: 110px;
 }

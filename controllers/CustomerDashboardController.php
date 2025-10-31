@@ -15,6 +15,9 @@ use app\models\CustomerPackage;
 use app\models\Ticket;
 use app\models\TicketChat;
 use yii\helpers\Url;
+use app\models\Income;
+use app\models\RewardPlan;
+use app\models\Options;
 
 /**
  * CustomerDashboardController handles customer dashboard functionality
@@ -549,6 +552,11 @@ class CustomerDashboardController extends Controller
          }
          
          $packageId = Yii::$app->request->post('package_id');
+         $targetPackage = Package::findOne($packageId);
+        if ($customer->balance < ( $targetPackage->amount + $targetPackage->fee )) {
+            return ['success' => false, 'message' => 'You don\'t have enough fund. please make request for fund to admin.'];
+        }
+         
          
          // Start database transaction
          $transaction = Yii::$app->db->beginTransaction();
@@ -562,8 +570,8 @@ class CustomerDashboardController extends Controller
                  return ['success' => false, 'message' => $result['message']];
              }
              
-             // Generate level income for the upgraded customer
-             $levelIncomeResult = Customer::generateLevelIncome($customer->id);
+            // Generate level income for the upgraded customer
+            $levelIncomeResult = Customer::generateLevelIncome($customer->id);
              
              if (!$levelIncomeResult['success']) {
                  // If level income generation fails, rollback the entire transaction
@@ -574,11 +582,109 @@ class CustomerDashboardController extends Controller
                  ];
              }
              
-             // If we reach here, both operations succeeded
-             $transaction->commit();
+            // Referral earnings (direct sponsor and extra bonus)
+            $packageAmount = (float) $targetPackage->amount;
+
+            // Direct sponsor
+            $directReferrer = Customer::find()
+                ->joinWith('user')
+                ->where(['user.username' => $customer->referral_code])
+                ->one();
+
+            if ($directReferrer) {
+                $referralBonusRate = (float) Options::getValue('referral_bonus_rate', 0);
+                if ($referralBonusRate > 0) {
+                    $directBonusAmount = round(($packageAmount * $referralBonusRate) / 100, 2);
+                    if ($directBonusAmount > 0) {
+                        $income = new Income();
+                        $income->customer_id = $directReferrer->id;
+                        $income->date = date('Y-m-d');
+                        $income->type = Income::TYPE_REFERRAL_INCOME;
+                        $income->level = 1;
+                        $income->amount = $directBonusAmount;
+                        $income->status = Income::STATUS_ACTIVE;
+                        $income->meta = json_encode([
+                            'source' => 'package_upgrade',
+                            'from_customer_id' => $customer->id,
+                            'package_id' => $targetPackage->id,
+                            'rate' => $referralBonusRate,
+                            'kind' => 'direct_referral_bonus',
+                        ]);
+                        if (!$income->save()) {
+                            $transaction->rollBack();
+                            return [
+                                'success' => false,
+                                'message' => 'Package upgrade failed due to referral bonus save error.'
+                            ];
+                        }
+                    }
+                }
+
+                // Extra bonus if direct referrer meets threshold
+                $extraRequired = (int) Options::getValue('referral_extra_bonus_no_of_referral', 0);
+                $extraRate = (float) Options::getValue('referral_extra_bonus_rate', 0);
+                if ($extraRequired > 0 && $extraRate > 0) {
+                    $directReferrals = Customer::find()
+                        ->joinWith('user')
+                        ->where(['referral_code' => $directReferrer->user->username])
+                        ->count();
+
+                    if ($directReferrals >= $extraRequired) {
+                        $extraAmount = round(($packageAmount * $extraRate) / 100, 2);
+                        if ($extraAmount > 0) {
+                            $income = new Income();
+                            $income->customer_id = $directReferrer->id;
+                            $income->date = date('Y-m-d');
+                            $income->type = Income::TYPE_REFERRAL_EXTRA_BONUS;
+                            $income->level = 1;
+                            $income->amount = $extraAmount;
+                            $income->status = Income::STATUS_ACTIVE;
+                            $income->meta = json_encode([
+                                'source' => 'package_upgrade',
+                                'from_customer_id' => $customer->id,
+                                'package_id' => $targetPackage->id,
+                                'rate' => $extraRate,
+                                'threshold' => $extraRequired,
+                                'kind' => 'referral_extra_bonus',
+                            ]);
+                            if (!$income->save()) {
+                                $transaction->rollBack();
+                                return [
+                                    'success' => false,
+                                    'message' => 'Package upgrade failed due to referral extra bonus save error.'
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Rewards: award based on RewardPlan thresholds (personal business)
+            $awardedRewards = [];
+            $plans = RewardPlan::find()->where(['status' => 1])->orderBy(['business_amount' => SORT_ASC])->all();
+            if (!empty($plans)) {
+                foreach ($plans as $plan) {
+                    if ($packageAmount >= (float) $plan->business_amount) {
+                        $awardedRewards[] = [
+                            'threshold' => (float) $plan->business_amount,
+                            'reward' => $plan->reward,
+                            'reward_amount' => (float) $plan->reward_amount,
+                        ];
+                    }
+                }
+            }
+
+            // Commit after creating incomes and computing rewards
+            $transaction->commit();
              
-             // Prepare success message
-             $result['message'] .= " Level income generation: {$levelIncomeResult['generated_count']} records created.";
+            // Prepare success message
+            $result['message'] .= " Level income generation: {$levelIncomeResult['generated_count']} records created.";
+            if (!empty($awardedRewards)) {
+                $rewardTexts = array_map(function($r) {
+                    return $r['reward'] . ' (' . number_format($r['reward_amount'], 2) . ')';
+                }, $awardedRewards);
+                $result['message'] .= ' Rewards achieved: ' . implode(', ', $rewardTexts) . '.';
+            }
              if ($levelIncomeResult['error_count'] > 0) {
                  $result['message'] .= " {$levelIncomeResult['error_count']} errors occurred.";
              }

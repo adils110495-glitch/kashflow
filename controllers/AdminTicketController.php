@@ -31,30 +31,13 @@ class AdminTicketController extends Controller
                     [
                         'allow' => true,
                         'matchCallback' => function ($rule, $action) {
-                            // Only allow admin users (not customers)
-                            if (Yii::$app->user->isGuest) {
-                                return false;
-                            }
-                            
-                            // Check if user is a customer - if yes, deny access
-                            $customer = Customer::find()->where(['user_id' => Yii::$app->user->id])->one();
-                            if ($customer) {
-                                return false; // Customers are not allowed
-                            }
-                            
-                            // Allow non-customer users (admins)
-                            return true;
+                            // Only allow authenticated admin users
+                            return !Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin();
                         },
                     ],
                 ],
                 'denyCallback' => function ($rule, $action) {
-                    // Redirect customers to their dashboard
-                    $customer = Customer::find()->where(['user_id' => Yii::$app->user->id])->one();
-                    if ($customer) {
-                        return Yii::$app->response->redirect(['/customer-dashboard/index']);
-                    }
-                    // Redirect guests to login
-                    return Yii::$app->response->redirect(['/user/login']);
+                    return Yii::$app->response->redirect(['admin-auth/login']);
                 },
             ],
             'verbs' => [

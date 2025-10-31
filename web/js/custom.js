@@ -21,7 +21,7 @@ $(document).ready(function() {
             var countryData = countriesData.find(function(c) { return c.id == countryId; });
             if (countryData && countryData.mobile_code) {
                 // Display country code and mobile code
-                var flagAndCode = '<span class="country-flag">' + countryData.flag + '</span> +' + countryData.mobile_code;
+                var flagAndCode = '<span class="country-flag">' + countryData.flag + '</span> ' + countryData.mobile_code;
                 $('#mobile-code-display').html(flagAndCode);
             } else {
                 $('#mobile-code-display').text('+1');

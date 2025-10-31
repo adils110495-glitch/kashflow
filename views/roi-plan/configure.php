@@ -6,7 +6,8 @@ use kartik\date\DatePicker;
 
 /** @var yii\web\View $this */
 /** @var array $roiData */
-/** @var array $referralData */
+/** @var array $referralExtraBonusData */
+/** @var array $referralBonusData */
 
 $this->title = 'ROI Plan Configuration';
 $this->params['breadcrumbs'][] = $this->title;
@@ -29,8 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="referral-tab" data-bs-toggle="tab" data-bs-target="#referral" type="button" role="tab" aria-controls="referral" aria-selected="false">
-                        <i class="feather icon-users me-1"></i> Referral Plan
+                    <button class="nav-link" id="referral-extra-bonus-tab" data-bs-toggle="tab" data-bs-target="#referral-extra-bonus" type="button" role="tab" aria-controls="referral-extra-bonus" aria-selected="false">
+                        <i class="feather icon-users me-1"></i> Referral Extra Bonus
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="referral-bonus-tab" data-bs-toggle="tab" data-bs-target="#referral-bonus" type="button" role="tab" aria-controls="referral-bonus" aria-selected="false">
+                        <i class="feather icon-award me-1"></i> Referral Bonus
                     </button>
                 </li>
             </ul>
@@ -104,29 +110,29 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 </div>
 
-                <!-- Referral Tab -->
-                <div class="tab-pane fade" id="referral" role="tabpanel" aria-labelledby="referral-tab">
+                <!-- Referral Extra Bonus Tab -->
+                <div class="tab-pane fade" id="referral-extra-bonus" role="tabpanel" aria-labelledby="referral-extra-bonus-tab">
                     <div class="mt-4">
                         <?php $form = ActiveForm::begin([
-                            'id' => 'referral-form',
+                            'id' => 'referral-extra-bonus-form',
                             'action' => ['configure'],
                             'method' => 'post'
                         ]); ?>
 
                         <div class="row">
                             <div class="col-md-6">
-                                <?= Html::label('Number of Referrals', 'referral_no_of_referral', ['class' => 'form-label']) ?>
-                                <?= Html::textInput('referral[no_of_referral]', $referralData['no_of_referral'], [
+                                <?= Html::label('Number of Referrals', 'referral_extra_bonus_no_of_referral', ['class' => 'form-label']) ?>
+                                <?= Html::textInput('referral_extra_bonus[no_of_referral]', $referralExtraBonusData['no_of_referral'], [
                                     'class' => 'form-control',
-                                    'id' => 'referral_no_of_referral',
+                                    'id' => 'referral_extra_bonus_no_of_referral',
                                     'placeholder' => 'Enter number of referrals required'
                                 ]) ?>
                             </div>
                             <div class="col-md-6">
-                                <?= Html::label('Referral Rate (%)', 'referral_rate', ['class' => 'form-label']) ?>
-                                <?= Html::textInput('referral[rate]', $referralData['rate'], [
+                                <?= Html::label('Referral Extra Bonus Rate (%)', 'referral_extra_bonus_rate', ['class' => 'form-label']) ?>
+                                <?= Html::textInput('referral_extra_bonus[rate]', $referralExtraBonusData['rate'], [
                                     'class' => 'form-control',
-                                    'id' => 'referral_rate',
+                                    'id' => 'referral_extra_bonus_rate',
                                     'placeholder' => 'Enter referral rate percentage'
                                 ]) ?>
                             </div>
@@ -134,23 +140,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <?= Html::label('Frequency', 'referral_frequency', ['class' => 'form-label']) ?>
-                                <?= Html::dropDownList('referral[frequency]', $referralData['frequency'], 
+                                <?= Html::label('Frequency', 'referral_extra_bonus_frequency', ['class' => 'form-label']) ?>
+                                <?= Html::dropDownList('referral_extra_bonus[frequency]', $referralExtraBonusData['frequency'], 
                                     \app\models\RoiPlan::buildFrequency(),
                                     [
                                         'class' => 'form-control',
-                                        'id' => 'referral_frequency',
+                                        'id' => 'referral_extra_bonus_frequency',
                                         'prompt' => 'Select Frequency'
                                     ]
                                 ) ?>
                             </div>
                             <div class="col-md-6">
-                                <?= Html::label('Tenure', 'referral_tenure', ['class' => 'form-label']) ?>
-                                <?= Html::dropDownList('referral[tenure]', $referralData['tenure'], 
+                                <?= Html::label('Tenure', 'referral_extra_bonus_tenure', ['class' => 'form-label']) ?>
+                                <?= Html::dropDownList('referral_extra_bonus[tenure]', $referralExtraBonusData['tenure'], 
                                     \app\models\RoiPlan::buildTenure(),
                                     [
                                         'class' => 'form-control',
-                                        'id' => 'referral_tenure',
+                                        'id' => 'referral_extra_bonus_tenure',
                                         'prompt' => 'Select Tenure'
                                     ]
                                 ) ?>
@@ -158,9 +164,40 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
 
                         <div class="form-group mt-3">
-                            <?= Html::submitButton('<i class="feather icon-save"></i> Save Referral Plan', [
+                            <?= Html::submitButton('<i class="feather icon-save"></i> Save Referral Extra Bonus', [
                                 'class' => 'btn btn-primary',
-                                'name' => 'submit-referral'
+                                'name' => 'submit-referral-extra-bonus'
+                            ]) ?>
+                        </div>
+
+                        <?php ActiveForm::end(); ?>
+                    </div>
+                </div>
+
+                <!-- Referral Bonus Tab (single rate) -->
+                <div class="tab-pane fade" id="referral-bonus" role="tabpanel" aria-labelledby="referral-bonus-tab">
+                    <div class="mt-4">
+                        <?php $form = ActiveForm::begin([
+                            'id' => 'referral-bonus-form',
+                            'action' => ['configure'],
+                            'method' => 'post'
+                        ]); ?>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <?= Html::label('Referral Bonus Rate (%)', 'referral_bonus_rate', ['class' => 'form-label']) ?>
+                                <?= Html::textInput('referral_bonus[rate]', $referralBonusData['rate'], [
+                                    'class' => 'form-control',
+                                    'id' => 'referral_bonus_rate',
+                                    'placeholder' => 'Enter referral bonus rate percentage'
+                                ]) ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-3">
+                            <?= Html::submitButton('<i class="feather icon-save"></i> Save Referral Bonus', [
+                                'class' => 'btn btn-info',
+                                'name' => 'submit-referral-bonus'
                             ]) ?>
                         </div>
 

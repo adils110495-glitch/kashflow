@@ -141,12 +141,17 @@ class RoiPlanController extends Controller
             'status' => \app\models\Options::getValue('roi_status', ''),
         ];
 
-        // Load referral data from options table
-        $referralData = [
-            'no_of_referral' => \app\models\Options::getValue('referral_no_of_referral', ''),
-            'rate' => \app\models\Options::getValue('referral_rate', ''),
-            'frequency' => \app\models\Options::getValue('referral_frequency', ''),
-            'tenure' => \app\models\Options::getValue('referral_tenure', ''),
+        // Load referral extra bonus data from options table
+        $referralExtraBonusData = [
+            'no_of_referral' => \app\models\Options::getValue('referral_extra_bonus_no_of_referral', ''),
+            'rate' => \app\models\Options::getValue('referral_extra_bonus_rate', ''),
+            'frequency' => \app\models\Options::getValue('referral_extra_bonus_frequency', ''),
+            'tenure' => \app\models\Options::getValue('referral_extra_bonus_tenure', ''),
+        ];
+
+        // Load referral bonus (single rate) data
+        $referralBonusData = [
+            'rate' => \app\models\Options::getValue('referral_bonus_rate', ''),
         ];
 
         if (Yii::$app->request->isPost) {
@@ -166,24 +171,35 @@ class RoiPlanController extends Controller
                 return $this->redirect(['configure']);
             }
             
-            // Handle Referral Plan submission
-            if (isset($postData['referral'])) {
-                $referralData = $postData['referral'];
-                
-                // Save referral data to options table
-                \app\models\Options::setValue('referral_no_of_referral', $referralData['no_of_referral']);
-                \app\models\Options::setValue('referral_rate', $referralData['rate']);
-                \app\models\Options::setValue('referral_frequency', $referralData['frequency']);
-                \app\models\Options::setValue('referral_tenure', $referralData['tenure']);
-                
-                Yii::$app->session->setFlash('success', 'Referral Plan saved successfully.');
+            // Handle Referral Extra Bonus submission
+            if (isset($postData['referral_extra_bonus'])) {
+                $referralExtraBonusData = $postData['referral_extra_bonus'];
+
+                // Save referral extra bonus data to options table
+                \app\models\Options::setValue('referral_extra_bonus_no_of_referral', $referralExtraBonusData['no_of_referral']);
+                \app\models\Options::setValue('referral_extra_bonus_rate', $referralExtraBonusData['rate']);
+                \app\models\Options::setValue('referral_extra_bonus_frequency', $referralExtraBonusData['frequency']);
+                \app\models\Options::setValue('referral_extra_bonus_tenure', $referralExtraBonusData['tenure']);
+
+                Yii::$app->session->setFlash('success', 'Referral Extra Bonus saved successfully.');
+                return $this->redirect(['configure']);
+            }
+
+            // Handle Referral Bonus submission (single rate)
+            if (isset($postData['referral_bonus'])) {
+                $referralBonusData = $postData['referral_bonus'];
+
+                \app\models\Options::setValue('referral_bonus_rate', $referralBonusData['rate']);
+
+                Yii::$app->session->setFlash('success', 'Referral Bonus saved successfully.');
                 return $this->redirect(['configure']);
             }
         }
 
         return $this->render('configure', [
             'roiData' => $roiData,
-            'referralData' => $referralData,
+            'referralExtraBonusData' => $referralExtraBonusData,
+            'referralBonusData' => $referralBonusData,
         ]);
     }
 

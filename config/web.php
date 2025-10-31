@@ -86,6 +86,15 @@ $config = [
                 'user/login' => 'user/security/login',
                 'user/register' => 'user/registration/register',
                 'user/registration/validate-referral-code' => 'user/registration/validate-referral-code',
+                
+                // Admin authentication routes
+                'admin-auth/login' => 'admin-auth/login',
+                'admin-auth/logout' => 'admin-auth/logout',
+                'admin-auth/dashboard' => 'admin-auth/dashboard',
+                'admin/login' => 'admin-auth/login',
+                'admin/logout' => 'admin-auth/logout',
+                'admin' => 'admin-dashboard/index',
+                'admin/dashboard' => 'admin-dashboard/index',
                 'packages' => 'package/index',
                 'packages/<action:\w+>' => 'package/<action>',
                 'packages/<action:\w+>/<id:\d+>' => 'package/<action>',
@@ -151,7 +160,7 @@ $config = [
     ],
     'as access' => [
         'class' => yii\filters\AccessControl::class,
-        'except' => ['user/login', 'user/security/login', 'user/register', 'user/registration/register', 'user/registration/validate-referral-code', 'site/login', 'site/error'], // no login required here
+        'except' => ['user/login', 'user/security/login', 'user/register', 'user/registration/register', 'user/registration/validate-referral-code', 'site/login', 'site/error', 'admin-auth/login', 'admin-auth/logout'], // no login required here
         'rules' => [
             [
                 'allow' => true,

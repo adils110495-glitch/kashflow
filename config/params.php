@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'adminEmail' => 'admin@kashflow.com',
+    'adminEmail' => 'info@heservices.in',
     'senderEmail' => 'noreply@kashflow.com',
     'senderName' => 'KashFlow System',
     //'bsDependencyEnabled' => false, 

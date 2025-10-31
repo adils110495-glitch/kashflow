@@ -26,9 +26,15 @@ class AdminController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@'], // Only authenticated users
+                        'matchCallback' => function ($rule, $action) {
+                            // Only allow authenticated admin users
+                            return !Yii::$app->user->isGuest && Yii::$app->user->identity->isAdmin();
+                        },
                     ],
                 ],
+                'denyCallback' => function ($rule, $action) {
+                    return Yii::$app->response->redirect(['admin-auth/login']);
+                },
             ],
         ];
     }

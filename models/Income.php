@@ -27,6 +27,7 @@ class Income extends BaseIncome
     const TYPE_ROI = 1;
     const TYPE_LEVEL_INCOME = 2;
     const TYPE_REFERRAL_INCOME = 3;
+    const TYPE_REFERRAL_EXTRA_BONUS = 4;
 
     // Status constants
     const STATUS_PENDING = 0;
@@ -43,7 +44,8 @@ class Income extends BaseIncome
         return [
             self::TYPE_ROI => 'ROI Earnings',
             self::TYPE_LEVEL_INCOME => 'Network Earnings',
-            self::TYPE_REFERRAL_INCOME => 'Referral Bonus',
+            self::TYPE_REFERRAL_INCOME => 'Referral Earning',
+            self::TYPE_REFERRAL_EXTRA_BONUS => 'Referral Extra Bonus',
         ];
     }
 
