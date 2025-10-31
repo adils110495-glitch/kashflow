@@ -92,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="info-box bg-warning">
                                     <span class="info-box-icon"><i class="fas fa-gift"></i></span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Open Package (Unpaid)</span>
+                                        <span class="info-box-text">Free Package (Unpaid)</span>
                                         <span class="info-box-number"><?= $packageStats['free']['unpaid'] ?></span>
                                     </div>
                                 </div>

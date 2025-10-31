@@ -18,7 +18,7 @@ $customerCurrency = $customer->getCurrencyForDisplay();
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
-                <h1>Good to have you back, <?= Html::encode($customer->name) ?>!</h1>
+                <h1>Welcome back, <?= Html::encode($customer->name) ?>!</h1>
             </div>
         </div>
     </div>
@@ -199,11 +199,11 @@ $customerCurrency = $customer->getCurrencyForDisplay();
                         <h4 class="text-primary"><?= Html::encode($customer->currentPackage->name) ?></h4>
                         <p><strong>Amount:</strong> <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->amount)) ?></p>
                         <p><strong>Fee:</strong> <?= $customer->formatCurrencyAmount($customer->convertFromInr($customer->currentPackage->fee)) ?></p>
-                        <p><strong>Status:</strong>
-                            <span class="badge <?= $customer->currentPackage->status == 1 ? 'badge-success' : 'badge-warning' ?>">
-                                <?= $customer->currentPackage->getStatusText() ?>
+                        <!--<p><strong>Status:</strong>
+                            <span class="badge <?//= $customer->currentPackage->status == 1 ? 'badge-success' : 'badge-warning' ?>">
+                                <?//= $customer->currentPackage->getStatusText() ?>
                             </span>
-                        </p>
+                        </p>-->
                     <?php else: ?>
                         <p class="text-muted">No package assigned</p>
                     <?php endif; ?>

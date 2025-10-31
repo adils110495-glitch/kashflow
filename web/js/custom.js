@@ -1,7 +1,7 @@
 // Custom jQuery functions for the application
 
 $(document).ready(function() {
-    var base_url = 'http://localhost/Kashflow/web';
+    var base_url = 'https://admin-kashflow.heservices.in/';
     // Initialize tooltips (Bootstrap 5 compatible)
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

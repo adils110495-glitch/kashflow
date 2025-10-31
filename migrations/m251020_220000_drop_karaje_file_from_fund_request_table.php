@@ -12,7 +12,7 @@ class m251020_220000_drop_karaje_file_from_fund_request_table extends Migration
      */
     public function safeUp()
     {
-        $this->dropColumn('{{%fund_request}}', 'karaje_file');
+        //$this->dropColumn('{{%fund_request}}', 'karaje_file');
     }
 
     /**

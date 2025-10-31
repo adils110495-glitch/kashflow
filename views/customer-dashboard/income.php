@@ -166,7 +166,7 @@ $customerCurrency = $customer->getCurrencyForDisplay();
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Income History</h5>
+                                    <h5>Earning History</h5>
                                     <div class="card-header-right">
                                         <span class="badge badge-primary"><?= count($incomes) ?> Records</span>
                                     </div>
